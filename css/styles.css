@@ -279,8 +279,11 @@
   }
 
   .auth-box {
+    display: flex;
+    flex-direction: column;
     width: 100%;
     max-width: 440px;
+    padding: 2rem;
     border: 2px solid var(--color-border-glass);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   }

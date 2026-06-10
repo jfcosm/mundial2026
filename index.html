@@ -74,8 +74,9 @@
     <!-- ----------------------------------------- -->
     <section class="screen-section active" id="screen-auth">
       <div class="auth-layout">
-           <h2 class="auth-title text-glow-cyan" data-t="authTitle">Inicio de Juego</h2>
-          
+        <div class="auth-box glass-panel">
+          <h2 class="auth-title text-glow-cyan" data-t="authTitle">Inicio de Juego</h2>
+
           <div class="auth-tabs" role="tablist">
             <button class="auth-tab-toggle active" id="auth-tab-login" role="tab" aria-selected="true" type="button" data-t="authLoginTab">Ingresar</button>
             <button class="auth-tab-toggle" id="auth-tab-signup" role="tab" aria-selected="false" type="button" data-t="authSignupTab">Registrarse</button>
@@ -120,7 +121,7 @@
                 <input type="tel" id="signup-phone" name="phone" placeholder="+56 9 1234 5678" data-t-placeholder="signupPhoneLabel" autocomplete="tel">
               </div>
             </div>
-            
+
             <div class="avatar-picker-label" data-t="signupAvatarLabel">Elige tu Avatar</div>
             <div class="avatar-grid" id="signup-avatar-grid">
               <!-- Dynamically populated in app.js -->
@@ -133,6 +134,7 @@
         </div>
       </div>
     </section>
+
 
 
     <!-- ----------------------------------------- -->
