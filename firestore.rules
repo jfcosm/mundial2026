@@ -1,0 +1,24 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Allow read access to all collections for leaderboard computations and displays
+    match /{document=**} {
+      allow read: if true;
+    }
+    
+    // Allow creation and updates of user profiles
+    match /users/{username} {
+      allow read, write: if true;
+    }
+    
+    // Allow matches updates (for score simulation from the admin panel)
+    match /matches/{matchId} {
+      allow read, write: if true;
+    }
+    
+    // Allow prediction submissions and changes
+    match /predictions/{predId} {
+      allow read, write: if true;
+    }
+  }
+}

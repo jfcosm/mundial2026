@@ -85,21 +85,27 @@
 
   // INITIALIZATION
   function init() {
-    window.WC_STORAGE.initLocalStorage();
+    // 1. Start real-time Firebase Sync listeners
+    window.WC_STORAGE.initFirebaseSync(() => {
+      // Whenever Firestore registers a data change, update the UI reactively
+      renderAll();
+    });
     
-    // Check if user is logged in
+    // 2. Check local session persistence
     const storedUser = sessionStorage.getItem("wc_active_user");
     if (storedUser) {
       currentUser = JSON.parse(storedUser);
     }
 
-    renderAll();
     setupEventListeners();
     initSignupAvatars();
     updateMuteButtonUI();
 
     addLog("Consola del Servidor iniciada. El Oráculo del Mundial 2026.", "system");
-    addLog(`Fecha y Hora actual del sistema: ${new Date(window.WC_STORAGE.getSimulatedTime()).toLocaleString('es-ES')}`, "normal");
+    
+    setTimeout(() => {
+      addLog(`Fecha y Hora actual del sistema (Sincronizado): ${new Date(window.WC_STORAGE.getSimulatedTime()).toLocaleString('es-ES')}`, "normal");
+    }, 1500);
   }
 
   // SIGNUP AVATARS GRID
@@ -433,20 +439,18 @@
             return;
           }
 
-          // Save prediction
-          const savedPreds = window.WC_STORAGE.getPredictions();
-          savedPreds[predKey] = {
-            homeGoals: parseInt(homeVal, 10),
-            awayGoals: parseInt(awayVal, 10)
-          };
-          window.WC_STORAGE.savePredictions(savedPreds);
-
-          window.WC_SOUND.playSuccess();
-          showToast(`¡Pronóstico guardado para ${match.homeTeam} vs ${match.awayTeam}!`);
-          addLog(`${currentUser.username} pronosticó: ${match.homeTeam} ${homeVal} - ${awayVal} ${match.awayTeam}`, "success");
-          
-          // Re-render dashboard HUD scores & mini leaderboard
-          renderAll();
+          // Save prediction to Firestore
+          window.WC_STORAGE.savePrediction(currentUser.username, match.id, homeVal, awayVal)
+            .then(() => {
+              window.WC_SOUND.playSuccess();
+              showToast(`¡Pronóstico guardado para ${match.homeTeam} vs ${match.awayTeam}!`);
+              addLog(`${currentUser.username} pronosticó: ${match.homeTeam} ${homeVal} - ${awayVal} ${match.awayTeam}`, "success");
+            })
+            .catch(err => {
+              window.WC_SOUND.playError();
+              showToast("Error al guardar pronóstico en la base de datos.", "error");
+              console.error("Firebase save error: ", err);
+            });
         });
       }
 
@@ -591,33 +595,46 @@
 
         // Finish action logic
         row.querySelector(`#btn-admin-finish-${match.id}`).onclick = () => {
-          // Finalize match simulation
           const savedMatches = window.WC_STORAGE.getMatches();
           const matchIndex = savedMatches.findIndex(m => m.id === match.id);
           
           if (matchIndex !== -1) {
+            // Update local memory copy for calculations
             savedMatches[matchIndex].realHomeGoals = hVal;
             savedMatches[matchIndex].realAwayGoals = aVal;
             savedMatches[matchIndex].status = "finished";
-            window.WC_STORAGE.saveMatches(savedMatches);
+            
+            // Push match score to Firestore, then compute and update user scores in Firestore
+            window.WC_STORAGE.saveMatches(savedMatches)
+              .then(() => {
+                const predictions = window.WC_STORAGE.getPredictions();
+                return window.WC_STORAGE.calculateAndSyncUserScores(savedMatches, predictions);
+              })
+              .then(() => {
+                window.WC_SOUND.playLevelUp();
+                showToast(`Partido finalizado: ${match.homeTeam} ${hVal} - ${aVal} ${match.awayTeam}`);
+                addLog(`Simulado partido: ${match.homeTeam} ${hVal} - ${aVal} ${match.awayTeam}. Calculando puntos...`, "success");
 
-            window.WC_SOUND.playLevelUp();
-            showToast(`Partido finalizado: ${match.homeTeam} ${hVal} - ${aVal} ${match.awayTeam}`);
-            addLog(`Simulado partido: ${match.homeTeam} ${hVal} - ${aVal} ${match.awayTeam}. Calculando puntos...`, "success");
+                // Print points updates to log
+                const predictions = window.WC_STORAGE.getPredictions();
+                const leaderboard = window.WC_STORAGE.calculateLeaderboard();
+                leaderboard.forEach(user => {
+                  const uPred = predictions[`${user.username}_${match.id}`];
+                  if (uPred) {
+                    const ptsResult = window.WC_STORAGE.calculateMatchPoints(uPred, match);
+                    if (ptsResult.points > 0) {
+                      addLog(` -> ${user.username} gana ${ptsResult.points} pts (${ptsResult.description}) con pronóstico [${uPred.homeGoals}-${uPred.awayGoals}]`, "normal");
+                    }
+                  }
+                });
 
-            // Print scores changes to the console log
-            const leaderboard = window.WC_STORAGE.calculateLeaderboard();
-            leaderboard.forEach(user => {
-              const uPred = predictions[`${user.username}_${match.id}`];
-              if (uPred) {
-                const ptsResult = window.WC_STORAGE.calculateMatchPoints(uPred, match);
-                if (ptsResult.points > 0) {
-                  addLog(` -> ${user.username} gana ${ptsResult.points} pts (${ptsResult.description}) con pronóstico [${uPred.homeGoals}-${uPred.awayGoals}]`, "normal");
-                }
-              }
-            });
-
-            renderAll();
+                renderAll();
+              })
+              .catch(err => {
+                window.WC_SOUND.playError();
+                showToast("Error al simular partido en la base de datos.", "error");
+                console.error("Simulation save error: ", err);
+              });
           }
         };
       }
@@ -711,58 +728,82 @@
       window.WC_SOUND.playClick();
       const current = window.WC_STORAGE.getSimulatedTime();
       const nextTime = current + offsetMs;
-      window.WC_STORAGE.saveSimulatedTime(nextTime);
       
-      addLog(`Máquina del Tiempo ajustada a: ${new Date(nextTime).toLocaleString('es-ES')}`, "system");
-      showToast("Tiempo simulado actualizado.");
-      renderAll();
+      window.WC_STORAGE.saveSimulatedTime(nextTime)
+        .then(() => {
+          addLog(`Máquina del Tiempo ajustada a: ${new Date(nextTime).toLocaleString('es-ES')}`, "system");
+          showToast("Tiempo simulado actualizado.");
+          renderAll();
+        })
+        .catch(err => {
+          window.WC_SOUND.playError();
+          showToast("Error al actualizar fecha en la base de datos.", "error");
+          console.error("Time machine save error: ", err);
+        });
     }
 
     // Reset Database button
     document.getElementById("btn-reset-database").onclick = () => {
-      if (confirm("¿Seguro que deseas restaurar la base de datos a sus valores por defecto? Se borrarán cuentas nuevas y resultados simulados.")) {
-        window.WC_STORAGE.resetAllData();
+      if (confirm("¿Seguro que deseas restaurar la base de datos a sus valores por defecto en Firebase? Se borrarán cuentas nuevas y resultados simulados.")) {
         window.WC_SOUND.playError();
         
-        // Re-authenticate session user or logout
-        sessionStorage.removeItem("wc_active_user");
-        currentUser = null;
-        activeTab = "screen-dashboard";
-        
-        addLog("Base de datos reiniciada a valores iniciales por defecto.", "system");
-        showToast("Base de datos restaurada.");
-        renderAll();
+        window.WC_STORAGE.resetAllData()
+          .then(() => {
+            sessionStorage.removeItem("wc_active_user");
+            currentUser = null;
+            activeTab = "screen-dashboard";
+            
+            addLog("Base de datos de Firebase reiniciada a valores iniciales por defecto.", "system");
+            showToast("Base de datos de Firebase restaurada.");
+            renderAll();
+          })
+          .catch(err => {
+            window.WC_SOUND.playError();
+            showToast("Error al restaurar base de datos en Firebase.", "error");
+            console.error("Firebase reset error: ", err);
+          });
       }
     };
 
-    // Form Submissions
+    // Form Submissions (Modified to use Firebase Auth + Firestore)
     formLogin.onsubmit = (e) => {
       e.preventDefault();
       const name = document.getElementById("login-username").value.trim();
       const pass = document.getElementById("login-password").value.trim();
 
-      const users = window.WC_STORAGE.getUsers();
-      const matched = users.find(u => u.username.toLowerCase() === name.toLowerCase() && u.password === pass);
-
-      if (matched) {
-        currentUser = matched;
-        sessionStorage.setItem("wc_active_user", JSON.stringify(matched));
-        
-        window.WC_SOUND.playSuccess();
-        showToast(`¡Bienvenido de nuevo, ${matched.username}!`);
-        addLog(`Usuario ingresado: ${matched.username}`);
-        
-        renderAll();
-      } else {
-        window.WC_SOUND.playError();
-        showToast("Usuario o contraseña incorrectos.", "error");
-      }
+      // Sign in via Firebase Auth using mock email
+      window.auth.signInWithEmailAndPassword(name.toLowerCase() + '@oraculo2026.com', pass)
+        .then(() => {
+          // Retrieve matching Firestore user document
+          return window.db.collection("users").doc(name).get();
+        })
+        .then(doc => {
+          if (doc.exists) {
+            currentUser = doc.data();
+            sessionStorage.setItem("wc_active_user", JSON.stringify(currentUser));
+            
+            window.WC_SOUND.playSuccess();
+            showToast(`¡Bienvenido de nuevo, ${currentUser.username}!`);
+            addLog(`Usuario ingresado: ${currentUser.username}`);
+            
+            renderAll();
+          } else {
+            window.WC_SOUND.playError();
+            showToast("Perfil de usuario no encontrado.", "error");
+          }
+        })
+        .catch(err => {
+          window.WC_SOUND.playError();
+          showToast("Usuario o contraseña incorrectos.", "error");
+          console.error("Auth login error: ", err);
+        });
     };
 
     formSignup.onsubmit = (e) => {
       e.preventDefault();
       const name = document.getElementById("signup-username").value.trim();
       const pass = document.getElementById("signup-password").value.trim();
+      const phoneVal = document.getElementById("signup-phone").value.trim();
 
       if (name.length < 3) {
         window.WC_SOUND.playError();
@@ -770,40 +811,55 @@
         return;
       }
 
-      const users = window.WC_STORAGE.getUsers();
-      const exists = users.some(u => u.username.toLowerCase() === name.toLowerCase());
+      // Check if username document exists in Firestore first
+      window.db.collection("users").doc(name).get()
+        .then(doc => {
+          if (doc.exists) {
+            throw new Error("username_taken");
+          }
+          // Register via Firebase Auth using mock email
+          return window.auth.createUserWithEmailAndPassword(name.toLowerCase() + '@oraculo2026.com', pass);
+        })
+        .then(() => {
+          // Save profile document in Firestore
+          const newUser = {
+            username: name,
+            password: pass,
+            phone: phoneVal,
+            avatar: selectedSignupAvatar,
+            isAdmin: false,
+            points: 0,
+            exact: 0,
+            difference: 0,
+            teamGoals: 0,
+            outcome: 0,
+            incorrect: 0
+          };
+          return window.db.collection("users").doc(name).set(newUser).then(() => newUser);
+        })
+        .then((newUser) => {
+          currentUser = newUser;
+          sessionStorage.setItem("wc_active_user", JSON.stringify(newUser));
 
-      if (exists) {
-        window.WC_SOUND.playError();
-        showToast("Ese nombre de usuario ya está tomado.", "error");
-        return;
-      }
+          window.WC_SOUND.playLevelUp();
+          showToast(`¡Cuenta creada con éxito! Bienvenido ${name}`);
+          addLog(`Nueva cuenta registrada: ${name} (avatar: ${selectedSignupAvatar})`, "success");
 
-      // Create user
-      const newUser = {
-        username: name,
-        password: pass,
-        phone: document.getElementById("signup-phone").value.trim(),
-        avatar: selectedSignupAvatar,
-        isAdmin: false
-      };
-      
-      users.push(newUser);
-      window.WC_STORAGE.saveUsers(users);
+          // Reset signup form inputs
+          formSignup.reset();
+          initSignupAvatars();
 
-      // Auto login
-      currentUser = newUser;
-      sessionStorage.setItem("wc_active_user", JSON.stringify(newUser));
-
-      window.WC_SOUND.playLevelUp();
-      showToast(`¡Cuenta creada con éxito! Bienvenido ${name}`);
-      addLog(`Nueva cuenta registrada: ${name} (avatar: ${selectedSignupAvatar})`, "success");
-
-      // Reset signup form inputs
-      formSignup.reset();
-      initSignupAvatars();
-
-      renderAll();
+          renderAll();
+        })
+        .catch(err => {
+          window.WC_SOUND.playError();
+          if (err.message === "username_taken") {
+            showToast("Ese nombre de usuario ya está tomado.", "error");
+          } else {
+            showToast("Error al crear cuenta. Revisa tus datos.", "error");
+            console.error("Auth signup error: ", err);
+          }
+        });
     };
   }
 

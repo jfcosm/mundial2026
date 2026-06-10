@@ -1,11 +1,21 @@
-// Local Storage & Scoring Management
+// Firebase Cloud Firestore Storage & Scoring Management
 (function() {
+  const DEFAULT_SIMULATED_TIME = new Date("2026-06-10T15:20:00-04:00").getTime();
+
+  // In-memory cache synced in real time
+  window.WC_CACHE = {
+    matches: [],
+    predictions: {},
+    users: [],
+    simulatedTime: DEFAULT_SIMULATED_TIME
+  };
+
   const DEFAULT_USERS = [
-    { username: "admin", password: "admin", avatar: "🏆", isAdmin: true },
-    { username: "Messi10", password: "123", avatar: "🐐", isAdmin: false },
-    { username: "Ronaldo7", password: "123", avatar: "⚡", isAdmin: false },
-    { username: "NeymarJr", password: "123", avatar: "👑", isAdmin: false },
-    { username: "Chicharito", password: "123", avatar: "🤖", isAdmin: false }
+    { username: "admin", password: "admin", avatar: "🏆", isAdmin: true, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
+    { username: "Messi10", password: "123", avatar: "🐐", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
+    { username: "Ronaldo7", password: "123", avatar: "⚡", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
+    { username: "NeymarJr", password: "123", avatar: "👑", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
+    { username: "Chicharito", password: "123", avatar: "🤖", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 }
   ];
 
   const DEFAULT_PREDICTIONS = {
@@ -46,70 +56,149 @@
     "NeymarJr_m8": { homeGoals: 2, awayGoals: 2 }
   };
 
-  // Initial Time: June 10, 2026 at 3:20 PM local (1 day before WC kickoff)
-  const DEFAULT_SIMULATED_TIME = new Date("2026-06-10T15:20:00-04:00").getTime();
-
-  function initLocalStorage() {
-    if (!localStorage.getItem("wc_users")) {
-      localStorage.setItem("wc_users", JSON.stringify(DEFAULT_USERS));
-    }
-    if (!localStorage.getItem("wc_predictions")) {
-      localStorage.setItem("wc_predictions", JSON.stringify(DEFAULT_PREDICTIONS));
-    }
-    if (!localStorage.getItem("wc_matches")) {
-      localStorage.setItem("wc_matches", JSON.stringify(window.WC_DATA.INITIAL_MATCHES));
-    }
-    if (!localStorage.getItem("wc_current_time")) {
-      localStorage.setItem("wc_current_time", DEFAULT_SIMULATED_TIME.toString());
-    }
+  // Seeding functions
+  function seedMatches() {
+    console.log("Seeding default matches to Firestore...");
+    const batch = window.db.batch();
+    window.WC_DATA.INITIAL_MATCHES.forEach(match => {
+      const ref = window.db.collection("matches").doc(match.id);
+      batch.set(ref, match);
+    });
+    return batch.commit();
   }
 
-  // Get data wrappers
+  function seedUsers() {
+    console.log("Seeding default users and predictions to Firestore...");
+    const batch = window.db.batch();
+    
+    // Seed users
+    DEFAULT_USERS.forEach(user => {
+      const ref = window.db.collection("users").doc(user.username);
+      batch.set(ref, user);
+    });
+
+    // Seed predictions
+    Object.keys(DEFAULT_PREDICTIONS).forEach(key => {
+      const [username, matchId] = key.split("_");
+      const ref = window.db.collection("predictions").doc(key);
+      batch.set(ref, {
+        username: username,
+        matchId: matchId,
+        homeGoals: DEFAULT_PREDICTIONS[key].homeGoals,
+        awayGoals: DEFAULT_PREDICTIONS[key].awayGoals
+      });
+    });
+
+    return batch.commit();
+  }
+
+  // Setup Real-time Listeners
+  function initFirebaseSync(onDataChangedCallback) {
+    if (!window.db) {
+      console.error("Firebase db is not initialized.");
+      return;
+    }
+
+    // 1. Sync simulated time
+    window.db.collection("settings").doc("simTime").onSnapshot(doc => {
+      if (doc.exists) {
+        window.WC_CACHE.simulatedTime = doc.data().time;
+      } else {
+        window.WC_CACHE.simulatedTime = DEFAULT_SIMULATED_TIME;
+        window.db.collection("settings").doc("simTime").set({ time: DEFAULT_SIMULATED_TIME });
+      }
+      onDataChangedCallback();
+    });
+
+    // 2. Sync matches
+    window.db.collection("matches").onSnapshot(snapshot => {
+      const matches = [];
+      snapshot.forEach(doc => {
+        matches.push(doc.data());
+      });
+      matches.sort((a, b) => a.id.localeCompare(b.id));
+
+      if (matches.length === 0) {
+        seedMatches();
+      } else {
+        window.WC_CACHE.matches = matches;
+        onDataChangedCallback();
+      }
+    }, err => console.error("Error syncing matches: ", err));
+
+    // 3. Sync users
+    window.db.collection("users").onSnapshot(snapshot => {
+      const users = [];
+      snapshot.forEach(doc => {
+        users.push(doc.data());
+      });
+
+      if (users.length === 0) {
+        seedUsers();
+      } else {
+        window.WC_CACHE.users = users;
+        onDataChangedCallback();
+      }
+    }, err => console.error("Error syncing users: ", err));
+
+    // 4. Sync predictions
+    window.db.collection("predictions").onSnapshot(snapshot => {
+      const predictions = {};
+      snapshot.forEach(doc => {
+        predictions[doc.id] = doc.data();
+      });
+      window.WC_CACHE.predictions = predictions;
+      onDataChangedCallback();
+    }, err => console.error("Error syncing predictions: ", err));
+  }
+
+  // Read data interfaces (reading from real-time local cache)
   function getUsers() {
-    return JSON.parse(localStorage.getItem("wc_users")) || [];
+    return window.WC_CACHE.users;
   }
 
   function getPredictions() {
-    return JSON.parse(localStorage.getItem("wc_predictions")) || {};
+    return window.WC_CACHE.predictions;
   }
 
   function getMatches() {
-    return JSON.parse(localStorage.getItem("wc_matches")) || [];
+    return window.WC_CACHE.matches;
   }
 
   function getSimulatedTime() {
-    return parseInt(localStorage.getItem("wc_current_time"), 10) || DEFAULT_SIMULATED_TIME;
+    return window.WC_CACHE.simulatedTime;
   }
 
-  // Set data wrappers
-  function saveUsers(users) {
-    localStorage.setItem("wc_users", JSON.stringify(users));
-  }
-
-  function savePredictions(predictions) {
-    localStorage.setItem("wc_predictions", JSON.stringify(predictions));
-  }
-
-  function saveMatches(matches) {
-    localStorage.setItem("wc_matches", JSON.stringify(matches));
+  // Write data interfaces (writing directly to Firestore)
+  function savePrediction(username, matchId, homeGoals, awayGoals) {
+    const key = `${username}_${matchId}`;
+    return window.db.collection("predictions").doc(key).set({
+      username: username,
+      matchId: matchId,
+      homeGoals: parseInt(homeGoals, 10),
+      awayGoals: parseInt(awayGoals, 10),
+      updatedAt: firebase.firestore.FieldValue.serverTimestamp()
+    });
   }
 
   function saveSimulatedTime(timeMs) {
-    localStorage.setItem("wc_current_time", timeMs.toString());
+    return window.db.collection("settings").doc("simTime").set({ time: timeMs });
   }
 
-  // Clear data back to defaults
-  function resetAllData() {
-    localStorage.setItem("wc_users", JSON.stringify(DEFAULT_USERS));
-    localStorage.setItem("wc_predictions", JSON.stringify(DEFAULT_PREDICTIONS));
-    localStorage.setItem("wc_matches", JSON.stringify(window.WC_DATA.INITIAL_MATCHES));
-    localStorage.setItem("wc_current_time", DEFAULT_SIMULATED_TIME.toString());
+  function saveMatches(matches) {
+    // We update matches individually or in batch.
+    const batch = window.db.batch();
+    matches.forEach(match => {
+      const ref = window.db.collection("matches").doc(match.id);
+      batch.set(ref, match);
+    });
+    return batch.commit();
   }
 
-  // Calculate points and prediction details for a user-match combination
+  // Points Calculation logic
   function calculateMatchPoints(pred, match) {
-    if (!pred || pred.homeGoals === null || pred.awayGoals === null ||
-        match.realHomeGoals === null || match.realAwayGoals === null) {
+    if (!pred || pred.homeGoals === null || pred.homeGoals === undefined || pred.awayGoals === null || pred.awayGoals === undefined ||
+        match.realHomeGoals === null || match.realHomeGoals === undefined || match.realAwayGoals === null || match.realAwayGoals === undefined) {
       return { points: 0, type: "none", description: "Sin pronóstico o partido no finalizado" };
     }
 
@@ -121,37 +210,31 @@
     const predOutcome = pH > pA ? "H" : (pH < pA ? "A" : "D");
     const realOutcome = rH > rA ? "H" : (rH < rA ? "A" : "D");
 
-    // Outcome incorrect: 0 points
     if (predOutcome !== realOutcome) {
       return { points: 0, type: "incorrect", description: "Resultado incorrecto (0 pts)" };
     }
 
-    // Exact Match: 10 points
     if (pH === rH && pA === rA) {
       return { points: 10, type: "exact", description: "Marcador exacto (+10 pts)" };
     }
 
-    // Goal Difference Match: 8 points
     if ((pH - pA) === (rH - rA)) {
       return { points: 8, type: "difference", description: "Diferencia de goles exacta (+8 pts)" };
     }
 
-    // Team Goals Match (at least one team goals guessed right): 6 points
     if (pH === rH || pA === rA) {
       return { points: 6, type: "team_goals", description: "Acierto de goles de un equipo (+6 pts)" };
     }
 
-    // Correct Outcome only: 5 points
     return { points: 5, type: "outcome", description: "Solo resultado (+5 pts)" };
   }
 
-  // Calculate scores for all users and returns sorted list for leaderboard
-  function calculateLeaderboard() {
+  // Calculate scores for all users and updates their values in Firestore
+  function calculateAndSyncUserScores(updatedMatches, predictions) {
     const users = getUsers();
-    const predictions = getPredictions();
-    const matches = getMatches();
+    const batch = window.db.batch();
 
-    const leaderboard = users.map(user => {
+    users.forEach(user => {
       let totalPoints = 0;
       let exactCount = 0;
       let diffCount = 0;
@@ -160,13 +243,13 @@
       let incorrectCount = 0;
       let totalPredictions = 0;
 
-      matches.forEach(match => {
+      updatedMatches.forEach(match => {
         const predKey = `${user.username}_${match.id}`;
         const pred = predictions[predKey];
 
-        if (pred && pred.homeGoals !== null && pred.awayGoals !== null) {
+        if (pred && pred.homeGoals !== null && pred.homeGoals !== undefined) {
           totalPredictions++;
-          if (match.realHomeGoals !== null && match.realAwayGoals !== null) {
+          if (match.realHomeGoals !== null && match.realHomeGoals !== undefined) {
             const result = calculateMatchPoints(pred, match);
             totalPoints += result.points;
 
@@ -179,41 +262,83 @@
         }
       });
 
-      return {
-        username: user.username,
-        avatar: user.avatar,
-        isAdmin: !!user.isAdmin,
+      const userRef = window.db.collection("users").doc(user.username);
+      batch.update(userRef, {
         points: totalPoints,
         exact: exactCount,
         difference: diffCount,
         teamGoals: teamGoalsCount,
         outcome: outcomeCount,
-        incorrect: incorrectCount,
-        totalPredictions: totalPredictions
-      };
+        incorrect: incorrectCount
+      });
     });
 
-    // Sort: Points Desc, then Exact Match Count Desc, then alphabetical username
-    return leaderboard.sort((a, b) => {
+    return batch.commit();
+  }
+
+  // Return sorted leaderboard list based on cached user scores
+  function calculateLeaderboard() {
+    const users = [...window.WC_CACHE.users];
+    return users.sort((a, b) => {
       if (b.points !== a.points) return b.points - a.points;
       if (b.exact !== a.exact) return b.exact - a.exact;
       return a.username.localeCompare(b.username);
     });
   }
 
-  // Export functions to window
+  // Clear data back to defaults in Firebase
+  function resetAllData() {
+    const batch = window.db.batch();
+    
+    // Reset matches
+    window.WC_DATA.INITIAL_MATCHES.forEach(match => {
+      const ref = window.db.collection("matches").doc(match.id);
+      batch.set(ref, match);
+    });
+
+    // Reset users
+    DEFAULT_USERS.forEach(u => {
+      const ref = window.db.collection("users").doc(u.username);
+      batch.set(ref, u);
+    });
+
+    // Delete existing predictions in cache first
+    Object.keys(window.WC_CACHE.predictions).forEach(key => {
+      const ref = window.db.collection("predictions").doc(key);
+      batch.delete(ref);
+    });
+
+    // Seed mock predictions
+    Object.keys(DEFAULT_PREDICTIONS).forEach(key => {
+      const [username, matchId] = key.split("_");
+      const ref = window.db.collection("predictions").doc(key);
+      batch.set(ref, {
+        username: username,
+        matchId: matchId,
+        homeGoals: DEFAULT_PREDICTIONS[key].homeGoals,
+        awayGoals: DEFAULT_PREDICTIONS[key].awayGoals
+      });
+    });
+
+    // Reset time
+    const timeRef = window.db.collection("settings").doc("simTime");
+    batch.set(timeRef, { time: DEFAULT_SIMULATED_TIME });
+
+    return batch.commit();
+  }
+
   window.WC_STORAGE = {
-    initLocalStorage,
+    initFirebaseSync,
     getUsers,
     getPredictions,
     getMatches,
     getSimulatedTime,
-    saveUsers,
-    savePredictions,
-    saveMatches,
+    savePrediction,
     saveSimulatedTime,
+    saveMatches,
     resetAllData,
     calculateMatchPoints,
-    calculateLeaderboard
+    calculateLeaderboard,
+    calculateAndSyncUserScores
   };
 })();
