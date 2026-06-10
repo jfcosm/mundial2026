@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Predice los marcadores de la Copa Mundial FIFA 2026 y compite con amigos en este simulador de polla de fútbol gamificado.">
-  <title>Mundial 2026 Oracle - Pronósticos y Tabla de Posiciones</title>
+  <title>El Oráculo del Mundial 2026 - Pronósticos y Tabla de Posiciones</title>
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
@@ -16,7 +16,7 @@
   <header class="app-header">
     <div class="app-brand">
       <span class="team-flag" aria-hidden="true">⚽</span>
-      <h1>Mundial 2026 Oracle</h1>
+      <h1>El Oráculo del Mundial 2026</h1>
     </div>
 
     <!-- Time Travel Status HUD -->
@@ -118,13 +118,13 @@
 
 
     <!-- ----------------------------------------- -->
-    <!-- SCREEN 2: MATCHES DASHBOARD               -->
+    <!-- SCREEN 2: MATCHES DASHBOARD (WITH SIDEBAR)-->
     <!-- ----------------------------------------- -->
     <section class="screen-section" id="screen-dashboard">
       <div class="dashboard-info-hud">
         <div>
-          <h2 class="text-glow-green" style="font-family: var(--font-heading); text-transform: uppercase;">Quiniela de Pronósticos</h2>
-          <p class="mt-1" style="font-size: 0.85rem; color: var(--color-text-muted);">Completa tus resultados. Los partidos cierran exactamente 1 hora antes del pitazo inicial.</p>
+          <h2 class="text-glow-green" style="font-family: var(--font-heading); text-transform: uppercase;">Polla Mundialista</h2>
+          <p class="mt-1" style="font-size: 0.85rem; color: var(--color-text-muted);">Completa tus resultados. Los partidos cierran exactamente 1 hora antes del pitazo inicial. Haz clic en las banderas para ver datos históricos de cada selección.</p>
         </div>
         
         <div class="dashboard-stats">
@@ -137,18 +137,41 @@
         </div>
       </div>
 
-      <!-- Filters Row -->
-      <div class="dashboard-info-hud" style="margin-bottom: 1.5rem; justify-content: flex-end;">
-        <div class="matches-filter-bar">
-          <button class="filter-btn active" id="btn-filter-all" data-filter="all" type="button">Todos</button>
-          <button class="filter-btn" id="btn-filter-open" data-filter="open" type="button">Abiertos</button>
-          <button class="filter-btn" id="btn-filter-closed" data-filter="closed" type="button">Cerrados</button>
-        </div>
-      </div>
+      <!-- Main Layout: Grid structure (Left: Matches, Right: Mini-leaderboard) -->
+      <div class="dashboard-layout">
+        
+        <!-- Main matches column -->
+        <div class="dashboard-main-col">
+          <!-- Filters Row -->
+          <div class="dashboard-info-hud" style="margin-bottom: 1.5rem; justify-content: flex-end;">
+            <div class="matches-filter-bar">
+              <button class="filter-btn active" id="btn-filter-all" data-filter="all" type="button">Todos</button>
+              <button class="filter-btn" id="btn-filter-open" data-filter="open" type="button">Abiertos</button>
+              <button class="filter-btn" id="btn-filter-closed" data-filter="closed" type="button">Cerrados</button>
+            </div>
+          </div>
 
-      <!-- Matches Grid -->
-      <div class="matches-grid" id="matches-grid-container">
-        <!-- Match Cards populated by App.js -->
+          <!-- Matches Grid -->
+          <div class="matches-grid" id="matches-grid-container">
+            <!-- Match Cards populated by App.js -->
+          </div>
+        </div>
+
+        <!-- Mini Leaderboard Sidebar -->
+        <aside class="dashboard-sidebar-col glass-panel" aria-label="Clasificación en tiempo real">
+          <h3 class="sidebar-title text-glow-yellow" style="font-family: var(--font-heading); font-size: 1rem; text-transform: uppercase; margin-bottom: 1rem; border-bottom: 1px solid var(--color-border-glass); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
+            <span>⚡</span> Clasificación en Vivo
+          </h3>
+          
+          <div class="mini-leaderboard-list" id="mini-leaderboard-container">
+            <!-- Populated dynamically with compact rows -->
+          </div>
+
+          <button class="btn-arcade-primary mt-4" id="btn-sidebar-view-all" type="button" style="padding: 0.5rem; font-size: 0.75rem; letter-spacing: 0.5px; box-shadow: none;">
+            <span>Ver Tabla Completa</span>
+          </button>
+        </aside>
+
       </div>
     </section>
 
@@ -160,7 +183,7 @@
       <h2 class="leaderboard-title text-glow-yellow">Salón de la Fama</h2>
       
       <div class="glass-panel" style="margin-bottom: 2rem; padding: 1rem;">
-        <h3 style="font-family: var(--font-heading); font-size: 0.9rem; text-transform: uppercase; color: var(--color-neon-yellow); margin-bottom: 0.5rem;">Tabla de Puntajes</h3>
+        <h3 style="font-family: var(--font-heading); font-size: 0.9rem; text-transform: uppercase; color: var(--color-neon-yellow); margin-bottom: 0.5rem;">Reglamento de Puntos (Polla)</h3>
         <p style="font-size: 0.8rem; color: var(--color-text-muted); line-height: 1.4;">
           <strong>Puntaje Máximo por Partido: 10 Pts</strong><br>
           ⚽ Marcador Exacto = 10 Pts | 
@@ -248,6 +271,68 @@
     </section>
 
   </main>
+
+  <!-- Sidebar slide-out drawer for Team Details -->
+  <aside id="team-details-sidebar" class="team-sidebar-drawer" aria-hidden="true">
+    <div class="team-sidebar-header">
+      <div style="display: flex; align-items: center; gap: 0.75rem;">
+        <span class="team-sidebar-flag" id="team-sidebar-flag">🇧🇷</span>
+        <h2 class="team-sidebar-title" id="team-sidebar-name">Brasil</h2>
+      </div>
+      <button id="btn-close-team-sidebar" class="btn-close-sidebar" aria-label="Cerrar panel" type="button">×</button>
+    </div>
+    
+    <div class="team-sidebar-body">
+      <p class="team-sidebar-desc" id="team-sidebar-overview">Cargando información...</p>
+      
+      <div class="team-stats-group">
+        <h3 class="team-stats-section-title">Historial Mundialista</h3>
+        
+        <div class="team-stat-item">
+          <span class="team-stat-lbl">Participaciones</span>
+          <span class="team-stat-val text-glow-cyan" id="team-stat-participations">22</span>
+        </div>
+        
+        <div class="team-stat-item">
+          <span class="team-stat-lbl">Títulos Mundiales</span>
+          <span class="team-stat-val text-glow-yellow" id="team-stat-titles">5 🏆</span>
+        </div>
+        
+        <div class="team-stat-item" style="flex-direction: column; align-items: flex-start; gap: 0.25rem;">
+          <span class="team-stat-lbl">Mejor Resultado</span>
+          <span class="team-stat-val text-glow-green" id="team-stat-best" style="font-size: 0.85rem;">Campeón</span>
+        </div>
+      </div>
+
+      <div class="team-stats-group" style="margin-top: 1.5rem;">
+        <h3 class="team-stats-section-title">Atributos (Valoración)</h3>
+        
+        <div class="team-attribute-bar">
+          <div class="team-attribute-lbl">
+            <span>Ataque</span>
+            <span id="team-attr-attack-val">94</span>
+          </div>
+          <div class="stat-bar-track">
+            <div class="stat-bar-fill attack" id="team-attr-attack-fill" style="width: 94%;"></div>
+          </div>
+        </div>
+        
+        <div class="team-attribute-bar" style="margin-top: 0.75rem;">
+          <div class="team-attribute-lbl">
+            <span>Defensa</span>
+            <span id="team-attr-defense-val">87</span>
+          </div>
+          <div class="stat-bar-track">
+            <div class="stat-bar-fill defense" id="team-attr-defense-fill" style="width: 87%;"></div>
+          </div>
+        </div>
+      </div>
+      
+      <div style="margin-top: 2.5rem; font-size: 0.75rem; color: var(--color-text-dim); text-align: center; line-height: 1.4;">
+        * Haz clic en la bandera de cualquier otra selección en los partidos para ver su rendimiento histórico.
+      </div>
+    </div>
+  </aside>
 
   <!-- Script Modules -->
   <script src="js/sound.js"></script>

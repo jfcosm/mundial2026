@@ -1,4 +1,4 @@
-// World Cup 2026 Matches Database
+// World Cup 2026 Matches Database and Team Statistics
 (function() {
   const INITIAL_MATCHES = [
     {
@@ -123,6 +123,137 @@
     }
   ];
 
+  const TEAM_STATS = {
+    "México": {
+      participations: 17,
+      titles: 0,
+      bestResult: "Cuartos de final (1970, 1986)",
+      attack: 78,
+      defense: 75,
+      overview: "El gigante de la Concacaf busca hacer valer su localía histórica en el Estadio Azteca para superar la barrera de los cuartos de final."
+    },
+    "Estados Unidos": {
+      participations: 11,
+      titles: 0,
+      bestResult: "Tercer lugar (1930)",
+      attack: 83,
+      defense: 80,
+      overview: "Con una generación joven y consolidada en Europa, la selección de las barras y las estrellas quiere hacer historia como coanfitrión."
+    },
+    "Canadá": {
+      participations: 2,
+      titles: 0,
+      bestResult: "Fase de grupos (1986, 2022)",
+      attack: 77,
+      defense: 74,
+      overview: "Liderados por Alphonso Davies, los canadienses buscan su primera victoria en la historia de las copas mundiales como locales."
+    },
+    "Nueva Zelanda": {
+      participations: 2,
+      titles: 0,
+      bestResult: "Fase de grupos (1982, 2010)",
+      attack: 68,
+      defense: 71,
+      overview: "Los 'All Whites' clasifican buscando reeditar la hazaña de Sudáfrica 2010, donde se marcharon invictos de la fase de grupos."
+    },
+    "España": {
+      participations: 16,
+      titles: 1,
+      bestResult: "Campeón (2010)",
+      attack: 89,
+      defense: 86,
+      overview: "La 'Roja' impone su juego de posesión y velocidad en bandas con jóvenes estrellas y un mediocampo altamente creativo."
+    },
+    "Japón": {
+      participations: 7,
+      titles: 0,
+      bestResult: "Octavos de final (2002, 2010, 2018, 2022)",
+      attack: 82,
+      defense: 81,
+      overview: "Los 'Samuráis Azules' son reconocidos por su orden táctico letal, transiciones a gran velocidad y gran disciplina colectiva."
+    },
+    "Argentina": {
+      participations: 18,
+      titles: 3,
+      bestResult: "Campeón (1978, 1986, 2022)",
+      attack: 93,
+      defense: 89,
+      overview: "La 'Albiceleste' defiende la corona mundial con un plantel repleto de figuras consagradas y la mística ganadora de Lionel Scaloni."
+    },
+    "Francia": {
+      participations: 16,
+      titles: 2,
+      bestResult: "Campeón (1998, 2018)",
+      attack: 92,
+      defense: 91,
+      overview: "Los 'Bleus' combinan velocidad física extrema, profundidad letal y una jerarquía en partidos decisivos que los hace favoritos."
+    },
+    "Brasil": {
+      participations: 22,
+      titles: 5,
+      bestResult: "Campeón (1958, 1962, 1970, 1994, 2002)",
+      attack: 94,
+      defense: 87,
+      overview: "La única selección con asistencia perfecta a los mundiales. Busca el ansiado hexacampeonato combinando samba y verticalidad."
+    },
+    "Camerún": {
+      participations: 8,
+      titles: 0,
+      bestResult: "Cuartos de final (1990)",
+      attack: 75,
+      defense: 73,
+      overview: "Los 'Leones Indomables' regresan al torneo con su característica potencia física y la meta de revivir su gloria de Italia 1990."
+    },
+    "Alemania": {
+      participations: 20,
+      titles: 4,
+      bestResult: "Campeón (1954, 1974, 1990, 2014)",
+      attack: 88,
+      defense: 85,
+      overview: "La 'Mannschaft' representa la disciplina y eficiencia táctica en torneos cortos, buscando igualar a Brasil con su quinta estrella."
+    },
+    "Marruecos": {
+      participations: 6,
+      titles: 0,
+      bestResult: "Cuarto lugar (2022)",
+      attack: 81,
+      defense: 85,
+      overview: "La revelación histórica de Qatar 2022 busca consolidarse como la principal potencia emergente del fútbol mundial."
+    },
+    "Italia": {
+      participations: 18,
+      titles: 4,
+      bestResult: "Campeón (1934, 1938, 1982, 2006)",
+      attack: 84,
+      defense: 88,
+      overview: "La escuadra 'Azzurra' llega con hambre de revancha y el clásico orden táctico defensivo que los ha llevado a ser tetracampeones."
+    },
+    "Uruguay": {
+      participations: 14,
+      titles: 2,
+      bestResult: "Campeón (1930, 1950)",
+      attack: 85,
+      defense: 86,
+      overview: "La 'Celeste' fusiona la mítica 'garra charrúa' con el ritmo vertical y de alta presión propuesto por su nueva generación."
+    },
+    "Portugal": {
+      participations: 8,
+      titles: 0,
+      bestResult: "Tercer lugar (1966)",
+      attack: 88,
+      defense: 84,
+      overview: "Una constelación de talento ofensivo luso busca coronarse en América tras dominar en los torneos europeos recientes."
+    },
+    "Corea del Sur": {
+      participations: 11,
+      titles: 0,
+      bestResult: "Cuarto lugar (2002)",
+      attack: 78,
+      defense: 76,
+      overview: "Un juego dinámico e incansable define a los coreanos, que buscan forzar errores a base de desgaste físico y presión."
+    }
+  };
+
   // A match is lockable if the current time is less than 1 hour before kickoff.
   // currentSimulatedTime is a millisecond timestamp representing simulated time.
   function isMatchLocked(match, currentSimulatedTime) {
@@ -146,6 +277,7 @@
 
   window.WC_DATA = {
     INITIAL_MATCHES,
+    TEAM_STATS,
     isMatchLocked,
     formatMatchTime
   };

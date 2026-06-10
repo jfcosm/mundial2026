@@ -23,6 +23,21 @@
   const adminLogOutput = document.getElementById("admin-log-output");
   const adminTimeDisplay = document.getElementById("admin-time-display");
   const toastContainer = document.getElementById("toast-container");
+  const miniLeaderboardContainer = document.getElementById("mini-leaderboard-container");
+
+  // Team Sidebar Elements
+  const teamDetailsSidebar = document.getElementById("team-details-sidebar");
+  const teamSidebarFlag = document.getElementById("team-sidebar-flag");
+  const teamSidebarName = document.getElementById("team-sidebar-name");
+  const teamSidebarOverview = document.getElementById("team-sidebar-overview");
+  const teamStatParticipations = document.getElementById("team-stat-participations");
+  const teamStatTitles = document.getElementById("team-stat-titles");
+  const teamStatBest = document.getElementById("team-stat-best");
+  const teamAttrAttackVal = document.getElementById("team-attr-attack-val");
+  const teamAttrAttackFill = document.getElementById("team-attr-attack-fill");
+  const teamAttrDefenseVal = document.getElementById("team-attr-defense-val");
+  const teamAttrDefenseFill = document.getElementById("team-attr-defense-fill");
+  const btnCloseTeamSidebar = document.getElementById("btn-close-team-sidebar");
 
   // State Variables
   let currentUser = null;
@@ -83,7 +98,7 @@
     initSignupAvatars();
     updateMuteButtonUI();
 
-    addLog("Consola del Servidor iniciada. Copa del Mundo 2026.", "system");
+    addLog("Consola del Servidor iniciada. El Oráculo del Mundial 2026.", "system");
     addLog(`Fecha y Hora actual del sistema: ${new Date(window.WC_STORAGE.getSimulatedTime()).toLocaleString('es-ES')}`, "normal");
   }
 
@@ -162,7 +177,10 @@
       });
 
       // Render tab specific components
-      if (activeTab === "screen-dashboard") renderDashboard();
+      if (activeTab === "screen-dashboard") {
+        renderDashboard();
+        renderMiniLeaderboard();
+      }
       if (activeTab === "screen-leaderboard") renderLeaderboard();
       if (activeTab === "screen-admin") renderAdmin();
     } else {
@@ -195,6 +213,70 @@
       formSignup.style.display = "block";
       formLogin.style.display = "none";
     };
+  }
+
+  // TEAM SIDEBAR DRAWER CONTROL
+  function openTeamSidebar(teamName) {
+    const stats = window.WC_DATA.TEAM_STATS[teamName];
+    if (!stats) return;
+
+    // Play click sound
+    window.WC_SOUND.playClick();
+
+    // Populate Sidebar elements
+    const matches = window.WC_STORAGE.getMatches();
+    const activeMatchWithTeam = matches.find(m => m.homeTeam === teamName || m.awayTeam === teamName);
+    const flag = activeMatchWithTeam ? (activeMatchWithTeam.homeTeam === teamName ? activeMatchWithTeam.homeFlag : activeMatchWithTeam.awayFlag) : "🏳️";
+
+    teamSidebarFlag.innerText = flag;
+    teamSidebarName.innerText = teamName;
+    teamSidebarOverview.innerText = stats.overview;
+
+    teamStatParticipations.innerText = stats.participations;
+    teamStatTitles.innerText = stats.titles > 0 ? `${stats.titles} 🏆` : "0";
+    teamStatBest.innerText = stats.bestResult;
+
+    // Attributes
+    teamAttrAttackVal.innerText = stats.attack;
+    teamAttrAttackFill.style.width = `${stats.attack}%`;
+    teamAttrDefenseVal.innerText = stats.defense;
+    teamAttrDefenseFill.style.width = `${stats.defense}%`;
+
+    // Open Sidebar drawer
+    teamDetailsSidebar.classList.add("open");
+    teamDetailsSidebar.setAttribute("aria-hidden", "false");
+  }
+
+  function closeTeamSidebar() {
+    if (teamDetailsSidebar.classList.contains("open")) {
+      window.WC_SOUND.playClick();
+      teamDetailsSidebar.classList.remove("open");
+      teamDetailsSidebar.setAttribute("aria-hidden", "true");
+    }
+  }
+
+  // RENDER: MINI LEADERBOARD SIDEBAR
+  function renderMiniLeaderboard() {
+    const leaderboard = window.WC_STORAGE.calculateLeaderboard();
+    miniLeaderboardContainer.innerHTML = "";
+
+    // Take top 5 users
+    const topUsers = leaderboard.slice(0, 5);
+
+    topUsers.forEach((user, index) => {
+      const row = document.createElement("div");
+      row.className = `mini-leaderboard-row ${user.username === currentUser.username ? 'active' : ''}`;
+
+      row.innerHTML = `
+        <div class="mini-user-info">
+          <span class="mini-user-rank-val">${index + 1}</span>
+          <span class="mini-user-avatar" aria-hidden="true">${user.avatar}</span>
+          <span class="mini-user-name" title="${user.username}">${user.username}</span>
+        </div>
+        <span class="mini-user-points">${user.points} pts</span>
+      `;
+      miniLeaderboardContainer.appendChild(row);
+    });
   }
 
   // RENDER: MATCHES DASHBOARD
@@ -274,9 +356,9 @@
         </div>
         
         <div class="match-teams-vs">
-          <!-- Home Team Row -->
+          <!-- Home Team Row (Clickable for Stats) -->
           <div class="team-row">
-            <div class="team-info">
+            <div class="team-info" data-team="${match.homeTeam}" title="Ver estadísticas de ${match.homeTeam}">
               <span class="team-flag" aria-hidden="true">${match.homeFlag}</span>
               <span class="team-name" title="${match.homeTeam}">${match.homeTeam}</span>
               <span class="team-code">${match.homeCode}</span>
@@ -293,9 +375,9 @@
             </div>
           </div>
 
-          <!-- Away Team Row -->
+          <!-- Away Team Row (Clickable for Stats) -->
           <div class="team-row" style="margin-top: 0.25rem;">
-            <div class="team-info">
+            <div class="team-info" data-team="${match.awayTeam}" title="Ver estadísticas de ${match.awayTeam}">
               <span class="team-flag" aria-hidden="true">${match.awayFlag}</span>
               <span class="team-name" title="${match.awayTeam}">${match.awayTeam}</span>
               <span class="team-code">${match.awayCode}</span>
@@ -323,6 +405,14 @@
           </div>
         </div>
       `;
+
+      // Click event for team stats sidebar
+      card.querySelectorAll(".team-info").forEach(element => {
+        element.addEventListener("click", () => {
+          const teamName = element.getAttribute("data-team");
+          openTeamSidebar(teamName);
+        });
+      });
 
       // Save listener for cards
       const saveBtn = card.querySelector(`#btn-save-${match.id}`);
@@ -355,7 +445,7 @@
           showToast(`¡Pronóstico guardado para ${match.homeTeam} vs ${match.awayTeam}!`);
           addLog(`${currentUser.username} pronosticó: ${match.homeTeam} ${homeVal} - ${awayVal} ${match.awayTeam}`, "success");
           
-          // Re-render dashboard HUD scores
+          // Re-render dashboard HUD scores & mini leaderboard
           renderAll();
         });
       }
@@ -554,6 +644,32 @@
           renderAll();
         }
       });
+    });
+
+    // Sidebar View All Rankings trigger
+    document.getElementById("btn-sidebar-view-all").onclick = () => {
+      window.WC_SOUND.playClick();
+      activeTab = "screen-leaderboard";
+      renderAll();
+    };
+
+    // Close team stats sidebar
+    btnCloseTeamSidebar.onclick = closeTeamSidebar;
+
+    // Close sidebar on Escape key
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        closeTeamSidebar();
+      }
+    });
+
+    // Close sidebar on clicking outside
+    document.addEventListener("click", (e) => {
+      if (teamDetailsSidebar.classList.contains("open") &&
+          !teamDetailsSidebar.contains(e.target) &&
+          !e.target.closest(".team-info")) {
+        closeTeamSidebar();
+      }
     });
 
     // Mute Button
