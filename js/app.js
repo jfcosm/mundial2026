@@ -326,17 +326,22 @@
     }
 
     filteredMatches.forEach(match => {
-      const isLocked = window.WC_DATA.isMatchLocked(match, simTime);
+      const isKnockout = match.isKnockout === true;
+      const isResolved = match.resolved === true;
+      const isLocked = window.WC_DATA.isMatchLocked(match, simTime) || (isKnockout && !isResolved);
+      
       const predKey = `${currentUser.username}_${match.id}`;
       const userPred = predictions[predKey] || { homeGoals: "", awayGoals: "" };
       
       const card = document.createElement("div");
-      card.className = `glass-panel match-card`;
+      card.className = `glass-panel match-card ${isKnockout && !isResolved ? 'match-pending' : ''}`;
 
       // Header row
       const isMatchFinished = match.realHomeGoals !== null && match.realAwayGoals !== null;
       let lockHtml = "";
-      if (isMatchFinished) {
+      if (isKnockout && !isResolved) {
+        lockHtml = `<span class="match-lock-status locked" style="background: rgba(255, 183, 0, 0.1); color: var(--color-neon-yellow); border-color: rgba(255, 183, 0, 0.2);">🔒 Clasificación Pendiente</span>`;
+      } else if (isMatchFinished) {
         lockHtml = `<span class="match-lock-status locked">🏁 Finalizado</span>`;
       } else if (isLocked) {
         lockHtml = `<span class="match-lock-status locked">🔒 Cerrado</span>`;
@@ -378,9 +383,9 @@
         </div>
         
         <div class="match-teams-vs">
-          <!-- Home Team Row (Clickable for Stats) -->
+          <!-- Home Team Row -->
           <div class="team-row">
-            <div class="team-info" data-team="${match.homeTeam}" title="Ver estadísticas de ${match.homeTeam}">
+            <div class="${(isKnockout && !isResolved) ? 'team-info-disabled' : 'team-info'}" data-team="${match.homeTeam}" title="${(isKnockout && !isResolved) ? '' : 'Ver estadísticas de ' + match.homeTeam}">
               <span class="team-flag" aria-hidden="true">${match.homeFlag}</span>
               <span class="team-name" title="${match.homeTeam}">${match.homeTeam}</span>
               <span class="team-code">${match.homeCode}</span>
@@ -397,9 +402,9 @@
             </div>
           </div>
 
-          <!-- Away Team Row (Clickable for Stats) -->
+          <!-- Away Team Row -->
           <div class="team-row" style="margin-top: 0.25rem;">
-            <div class="team-info" data-team="${match.awayTeam}" title="Ver estadísticas de ${match.awayTeam}">
+            <div class="${(isKnockout && !isResolved) ? 'team-info-disabled' : 'team-info'}" data-team="${match.awayTeam}" title="${(isKnockout && !isResolved) ? '' : 'Ver estadísticas de ' + match.awayTeam}">
               <span class="team-flag" aria-hidden="true">${match.awayFlag}</span>
               <span class="team-name" title="${match.awayTeam}">${match.awayTeam}</span>
               <span class="team-code">${match.awayCode}</span>

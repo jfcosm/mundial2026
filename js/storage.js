@@ -201,8 +201,104 @@
     return window.db.collection("settings").doc("simTime").set({ time: timeMs });
   }
 
+  function resolveKnockoutBrackets(matches) {
+    const getStandings = (groupName) => {
+      const teams = {};
+      const groupMatches = matches.filter(m => m.group === groupName && !m.isKnockout);
+      
+      groupMatches.forEach(m => {
+        if (!teams[m.homeTeam]) {
+          teams[m.homeTeam] = { name: m.homeTeam, code: m.homeCode, flag: m.homeFlag, points: 0, gd: 0, gf: 0 };
+        }
+        if (!teams[m.awayTeam]) {
+          teams[m.awayTeam] = { name: m.awayTeam, code: m.awayCode, flag: m.awayFlag, points: 0, gd: 0, gf: 0 };
+        }
+      });
+      
+      groupMatches.forEach(m => {
+        if (m.realHomeGoals !== null && m.realAwayGoals !== null) {
+          const hG = parseInt(m.realHomeGoals, 10);
+          const aG = parseInt(m.realAwayGoals, 10);
+          
+          teams[m.homeTeam].gf += hG;
+          teams[m.awayTeam].gf += aG;
+          teams[m.homeTeam].gd += (hG - aG);
+          teams[m.awayTeam].gd += (aG - hG);
+          
+          if (hG > aG) {
+            teams[m.homeTeam].points += 3;
+          } else if (hG < aG) {
+            teams[m.awayTeam].points += 3;
+          } else {
+            teams[m.homeTeam].points += 1;
+            teams[m.awayTeam].points += 1;
+          }
+        }
+      });
+      
+      return Object.values(teams).sort((a, b) => {
+        if (b.points !== a.points) return b.points - a.points;
+        if (b.gd !== a.gd) return b.gd - a.gd;
+        if (b.gf !== a.gf) return b.gf - a.gf;
+        return a.name.localeCompare(b.name);
+      });
+    };
+
+    const isGroupCompleted = (groupName) => {
+      const groupMatches = matches.filter(m => m.group === groupName && !m.isKnockout);
+      if (groupMatches.length === 0) return false;
+      return groupMatches.every(m => m.status === "finished");
+    };
+
+    const bracketRules = {
+      "k1": { homeGroup: "Grupo I", homeRank: 1, awayGroup: "Grupo J", awayRank: 2 },
+      "k2": { homeGroup: "Grupo K", homeRank: 1, awayGroup: "Grupo L", awayRank: 2 },
+      "k3": { homeGroup: "Grupo A", homeRank: 1, awayGroup: "Grupo B", awayRank: 2 },
+      "k4": { homeGroup: "Grupo C", homeRank: 1, awayGroup: "Grupo D", awayRank: 2 },
+      "k5": { homeGroup: "Grupo E", homeRank: 1, awayGroup: "Grupo F", awayRank: 2 },
+      "k6": { homeGroup: "Grupo G", homeRank: 1, awayGroup: "Grupo H", awayRank: 2 }
+    };
+
+    matches.forEach(m => {
+      if (m.isKnockout) {
+        const rule = bracketRules[m.id];
+        if (rule) {
+          const homeCompleted = isGroupCompleted(rule.homeGroup);
+          const awayCompleted = isGroupCompleted(rule.awayGroup);
+
+          if (homeCompleted && awayCompleted) {
+            const homeStandings = getStandings(rule.homeGroup);
+            const awayStandings = getStandings(rule.awayGroup);
+
+            const homeTeamObj = homeStandings[rule.homeRank - 1];
+            const awayTeamObj = awayStandings[rule.awayRank - 1];
+
+            if (homeTeamObj && awayTeamObj) {
+              m.homeTeam = homeTeamObj.name;
+              m.homeFlag = homeTeamObj.flag;
+              m.homeCode = homeTeamObj.code;
+              m.awayTeam = awayTeamObj.name;
+              m.awayFlag = awayTeamObj.flag;
+              m.awayCode = awayTeamObj.code;
+              m.resolved = true;
+            }
+          } else {
+            m.homeTeam = `${rule.homeRank}º ${rule.homeGroup}`;
+            m.homeFlag = "❓";
+            m.homeCode = m.placeholderHome;
+            m.awayTeam = `${rule.awayRank}º ${rule.awayGroup}`;
+            m.awayFlag = "❓";
+            m.awayCode = m.placeholderAway;
+            m.resolved = false;
+          }
+        }
+      }
+    });
+  }
+
   function saveMatches(matches) {
-    // We update matches individually or in batch.
+    resolveKnockoutBrackets(matches);
+
     const batch = window.db.batch();
     matches.forEach(match => {
       const ref = window.db.collection("matches").doc(match.id);
