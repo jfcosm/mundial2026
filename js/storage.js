@@ -12,11 +12,11 @@
   };
 
   const DEFAULT_USERS = [
-    { username: "admin", password: "admin", avatar: "🏆", isAdmin: true, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
-    { username: "Messi10", password: "123", avatar: "🐐", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
-    { username: "Ronaldo7", password: "123", avatar: "⚡", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
-    { username: "NeymarJr", password: "123", avatar: "👑", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
-    { username: "Chicharito", password: "123", avatar: "🤖", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 }
+    { username: "admin", password: "admin2026", avatar: "🏆", isAdmin: true, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
+    { username: "Messi10", password: "messi10", avatar: "🐐", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
+    { username: "Ronaldo7", password: "ronaldo7", avatar: "⚡", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
+    { username: "NeymarJr", password: "neymarjr", avatar: "👑", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 },
+    { username: "Chicharito", password: "chicharito", avatar: "🤖", isAdmin: false, points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0 }
   ];
 
   const DEFAULT_PREDICTIONS = {
@@ -348,6 +348,7 @@
   }
 
   window.WC_STORAGE = {
+    DEFAULT_USERS,
     initFirebaseSync,
     getUsers,
     getPredictions,

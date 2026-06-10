@@ -834,9 +834,10 @@
       e.preventDefault();
       const name = document.getElementById("login-username").value.trim();
       const pass = document.getElementById("login-password").value.trim();
+      const email = name.toLowerCase() + '@oraculo2026.com';
 
       // Sign in via Firebase Auth using mock email
-      window.auth.signInWithEmailAndPassword(name.toLowerCase() + '@oraculo2026.com', pass)
+      window.auth.signInWithEmailAndPassword(email, pass)
         .then(() => {
           // Retrieve matching Firestore user document
           return window.db.collection("users").doc(name).get();
@@ -852,14 +853,55 @@
             
             renderAll();
           } else {
-            window.WC_SOUND.playError();
-            showToast("Perfil de usuario no encontrado.", "error");
+            // User authenticated in Auth, but doc missing in Firestore. Let's create it!
+            const defaultUser = window.WC_STORAGE.DEFAULT_USERS.find(u => u.username.toLowerCase() === name.toLowerCase());
+            const newUser = defaultUser ? { ...defaultUser } : {
+              username: name,
+              password: pass,
+              phone: "",
+              avatar: "⚽",
+              isAdmin: name.toLowerCase() === "admin",
+              points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0
+            };
+            return window.db.collection("users").doc(name).set(newUser).then(() => {
+              currentUser = newUser;
+              sessionStorage.setItem("wc_active_user", JSON.stringify(newUser));
+              window.WC_SOUND.playSuccess();
+              showToast(`¡Perfil de usuario restaurado: ${currentUser.username}!`);
+              addLog(`Usuario ingresado y perfil creado: ${currentUser.username}`);
+              renderAll();
+            });
           }
         })
         .catch(err => {
-          window.WC_SOUND.playError();
-          showToast("Usuario o contraseña incorrectos.", "error");
-          console.error("Auth login error: ", err);
+          // If the login failed, check if the entered name/password matches a default mock user.
+          // If so, we auto-create the Auth account on the fly (since Auth database was created fresh!)
+          const defaultUser = window.WC_STORAGE.DEFAULT_USERS.find(u => u.username.toLowerCase() === name.toLowerCase() && u.password === pass);
+          if (defaultUser) {
+            addLog(`Provisionando cuenta de autenticación para usuario mock: ${name}...`, "system");
+            return window.auth.createUserWithEmailAndPassword(email, pass)
+              .then(() => {
+                // Ensure profile doc exists in Firestore
+                return window.db.collection("users").doc(name).set(defaultUser);
+              })
+              .then(() => {
+                currentUser = defaultUser;
+                sessionStorage.setItem("wc_active_user", JSON.stringify(defaultUser));
+                window.WC_SOUND.playSuccess();
+                showToast(`¡Usuario mock inicializado: ${currentUser.username}!`);
+                addLog(`Usuario mock ingresado y registrado: ${currentUser.username}`);
+                renderAll();
+              })
+              .catch(signUpErr => {
+                window.WC_SOUND.playError();
+                showToast("Usuario o contraseña incorrectos.", "error");
+                console.error("Auth mock signup error: ", signUpErr);
+              });
+          } else {
+            window.WC_SOUND.playError();
+            showToast("Usuario o contraseña incorrectos.", "error");
+            console.error("Auth login error: ", err);
+          }
         });
     };
 
@@ -872,6 +914,12 @@
       if (name.length < 3) {
         window.WC_SOUND.playError();
         showToast("El usuario debe tener al menos 3 letras.", "error");
+        return;
+      }
+
+      if (pass.length < 6) {
+        window.WC_SOUND.playError();
+        showToast("La contraseña debe tener al menos 6 caracteres.", "error");
         return;
       }
 
