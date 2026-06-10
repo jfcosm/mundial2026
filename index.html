@@ -17,41 +17,94 @@
   <!-- Floating Toast Notifications -->
   <div id="toast-container" class="toast-container" aria-live="polite"></div>
 
-  <!-- Header Banner -->
+  <!-- Hamburger Drawer Overlay -->
+  <div id="hamburger-overlay" class="hamburger-overlay" aria-hidden="true"></div>
+
+  <!-- Hamburger Side Drawer -->
+  <aside id="hamburger-drawer" class="hamburger-drawer" aria-label="Menú de navegación">
+    <div class="hamburger-drawer-header">
+      <span class="hamburger-drawer-brand">⚽ Oráculo 2026</span>
+      <button id="btn-close-drawer" class="btn-close-drawer" type="button" aria-label="Cerrar menú">✕</button>
+    </div>
+
+    <!-- User Info Card (only when logged in) -->
+    <div id="drawer-user-card" class="drawer-user-card" style="display:none;">
+      <div class="drawer-user-avatar" id="drawer-avatar">🐐</div>
+      <div>
+        <div class="drawer-user-name" id="drawer-username">-</div>
+        <div class="drawer-user-score" id="drawer-score">0 Pts</div>
+        <div id="drawer-rank-badge" class="user-badge-level rookie" style="margin-top:0.3rem;font-size:0.7rem;">Principiante</div>
+      </div>
+    </div>
+
+    <!-- Navigation Links -->
+    <nav id="drawer-nav" class="drawer-nav" style="display:none;">
+      <button class="drawer-nav-btn active" id="drawer-tab-dashboard" data-target="screen-dashboard" type="button">
+        <span data-t="tabMatches">🏟️ Partidos</span>
+      </button>
+      <button class="drawer-nav-btn" id="drawer-tab-leaderboard" data-target="screen-leaderboard" type="button">
+        <span data-t="tabLeaderboard">🏆 Tabla</span>
+      </button>
+      <button class="drawer-nav-btn" id="drawer-tab-admin" data-target="screen-admin" type="button" style="display:none;">
+        <span data-t="tabSimulator">⚙️ Simulador</span>
+      </button>
+    </nav>
+
+    <div class="drawer-divider"></div>
+
+    <!-- Language & Sound -->
+    <div class="drawer-controls">
+      <div class="lang-selector-wrapper">
+        <select id="lang-selector" class="lang-select-box" aria-label="Seleccionar idioma / Select language">
+          <option value="es">🇪🇸 ES</option>
+          <option value="en">🇺🇸 EN</option>
+        </select>
+      </div>
+      <button class="drawer-icon-btn" id="tab-mute-toggle" type="button" title="Activar/Desactivar sonido">
+        <span id="mute-icon">🔊</span>
+      </button>
+    </div>
+
+    <!-- Logout (only when logged in) -->
+    <div id="drawer-logout-wrap" style="display:none; margin-top:auto;">
+      <div class="drawer-divider"></div>
+      <button class="drawer-logout-btn" id="btn-logout" type="button">
+        <span>🚪</span> <span data-t="logout">Salir</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Header Banner (slim) -->
   <header class="app-header">
     <div class="app-brand">
       <span class="team-flag" aria-hidden="true">⚽</span>
       <h1 data-t="title">El Oráculo del Mundial 2026</h1>
     </div>
 
-    <!-- Time Travel Status HUD -->
-    <div class="time-hud" id="time-hud-display" title="Fecha y Hora simulada en el juego">
-      <span class="time-hud-icon" aria-hidden="true">⏱️</span>
-      <span id="current-simulated-time-hud" data-t="loadingDate">Cargando fecha...</span>
-    </div>
+    <!-- Right side controls -->
+    <div class="header-right">
+      <!-- Hidden HUD (kept for JS compatibility, not shown) -->
+      <span id="current-simulated-time-hud" style="display:none;"></span>
 
-    <!-- Language Selector Dropdown -->
-    <div class="lang-selector-wrapper">
-      <select id="lang-selector" class="lang-select-box" aria-label="Seleccionar idioma / Select language">
-        <option value="es">🇪🇸 ES</option>
-        <option value="en">🇺🇸 EN</option>
-      </select>
-    </div>
-
-    <!-- Active User Profile Indicator -->
-    <div class="header-user-profile" id="user-header-profile" style="display: none;">
-      <div class="user-avatar-badge" id="user-header-avatar" aria-hidden="true">🐐</div>
-      <div class="user-meta-details">
-        <span class="user-name-txt" id="user-header-name" data-t="guest">Invitado</span>
-        <span class="user-score-txt" id="user-header-score">0 Pts</span>
+      <!-- Active User Profile (slim, desktop only) -->
+      <div class="header-user-profile" id="user-header-profile" style="display: none;">
+        <div class="user-avatar-badge" id="user-header-avatar" aria-hidden="true">🐐</div>
+        <div class="user-meta-details">
+          <span class="user-name-txt" id="user-header-name" data-t="guest">Invitado</span>
+          <span class="user-score-txt" id="user-header-score">0 Pts</span>
+        </div>
       </div>
-      <button class="filter-btn" id="btn-logout" type="button" style="padding: 0.3rem 0.6rem; margin-left: 0.5rem;" title="Cerrar sesión">
-        <span data-t="logout">Salir</span>
+
+      <!-- Hamburger Button -->
+      <button id="btn-hamburger" class="btn-hamburger" type="button" aria-label="Abrir menú" aria-expanded="false" aria-controls="hamburger-drawer">
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
+        <span class="hamburger-line"></span>
       </button>
     </div>
   </header>
 
-  <!-- Screen Routing Tabs (Hidden for Unauthenticated users) -->
+  <!-- Tab navigation (desktop, hidden on mobile — hamburger handles mobile) -->
   <nav class="tab-navigation" id="main-navigation" style="display: none;">
     <button class="tab-btn active" id="tab-dashboard" data-target="screen-dashboard" type="button">
       <span data-t="tabMatches">🏟️ Partidos</span>
@@ -59,11 +112,8 @@
     <button class="tab-btn" id="tab-leaderboard" data-target="screen-leaderboard" type="button">
       <span data-t="tabLeaderboard">🏆 Tabla</span>
     </button>
-    <button class="tab-btn" id="tab-admin" data-target="screen-admin" type="button" style="border-color: rgba(255,183,0,0.2);">
+    <button class="tab-btn" id="tab-admin" data-target="screen-admin" type="button" style="border-color: rgba(255,183,0,0.2); display:none;">
       <span data-t="tabSimulator">⚙️ Simulador</span>
-    </button>
-    <button class="tab-btn" id="tab-mute-toggle" type="button" style="padding: 0.5rem; font-size: 1.1rem; border-color: rgba(255,255,255,0.05);" title="Activar/Desactivar sonido">
-      <span id="mute-icon">🔊</span>
     </button>
   </nav>
 

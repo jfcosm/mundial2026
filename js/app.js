@@ -9,6 +9,17 @@
   const userHeaderProfile = document.getElementById("user-header-profile");
   const currentSimulatedTimeHud = document.getElementById("current-simulated-time-hud");
 
+  // Hamburger Drawer Elements
+  const hamburgerDrawer = document.getElementById("hamburger-drawer");
+  const hamburgerOverlay = document.getElementById("hamburger-overlay");
+  const drawerUserCard = document.getElementById("drawer-user-card");
+  const drawerNav = document.getElementById("drawer-nav");
+  const drawerLogoutWrap = document.getElementById("drawer-logout-wrap");
+  const drawerAvatar = document.getElementById("drawer-avatar");
+  const drawerUsername = document.getElementById("drawer-username");
+  const drawerScore = document.getElementById("drawer-score");
+  const drawerRankBadge = document.getElementById("drawer-rank-badge");
+
   // Auth Forms
   const authTabLogin = document.getElementById("auth-tab-login");
   const authTabSignup = document.getElementById("auth-tab-signup");
@@ -597,23 +608,18 @@
       hour: '2-digit', minute: '2-digit'
     });
 
-    // Update Header HUD
-    if (isTestActive) {
-      currentSimulatedTimeHud.innerHTML = `<span style="color: var(--color-neon-yellow); margin-right: 0.25rem;">${t("hudTest")}</span> ${formattedTime}`;
-    } else {
-      currentSimulatedTimeHud.innerHTML = `<span style="color: var(--color-neon-green); text-shadow: 0 0 8px var(--color-neon-green); margin-right: 0.25rem;">${t("hudLive")}</span> ${formattedTime}`;
-    }
-    
     // Update Admin Time display
-    if (isTestActive) {
-      adminTimeDisplay.innerText = formattedTime;
-      adminTimeDisplay.style.color = "var(--color-neon-yellow)";
-      adminTimeDisplay.style.borderColor = "#222";
-    } else {
-      adminTimeDisplay.innerText = t("syncRealClock");
-      adminTimeDisplay.style.color = "var(--color-neon-green)";
-      adminTimeDisplay.style.borderColor = "var(--color-neon-green)";
-      adminTimeDisplay.style.textShadow = "0 0 8px rgba(0, 255, 135, 0.4)";
+    if (adminTimeDisplay) {
+      if (isTestActive) {
+        adminTimeDisplay.innerText = formattedTime;
+        adminTimeDisplay.style.color = "var(--color-neon-yellow)";
+        adminTimeDisplay.style.borderColor = "#222";
+      } else {
+        adminTimeDisplay.innerText = t("syncRealClock");
+        adminTimeDisplay.style.color = "var(--color-neon-green)";
+        adminTimeDisplay.style.borderColor = "var(--color-neon-green)";
+        adminTimeDisplay.style.textShadow = "0 0 8px rgba(0, 255, 135, 0.4)";
+      }
     }
 
     if (currentUser) {
@@ -629,7 +635,7 @@
       document.getElementById("user-header-avatar").innerText = currentUser.avatar;
       document.getElementById("user-header-name").innerText = currentUser.username;
       document.getElementById("user-header-score").innerText = `${userStats.points} ${t("pts")}`;
-      
+
       // Update Dashboard HUD stats
       document.getElementById("dashboard-hud-score").innerText = `${userStats.points} ${t("pts")}`;
       const rank = getRankDetails(userStats.points);
@@ -637,12 +643,30 @@
       dashboardHudRank.innerText = rank.name;
       dashboardHudRank.className = `user-badge-level ${rank.class}`;
 
+      // Sync hamburger drawer user card
+      drawerAvatar.innerText = currentUser.avatar;
+      drawerUsername.innerText = currentUser.username;
+      drawerScore.innerText = `${userStats.points} ${t("pts")}`;
+      drawerRankBadge.innerText = rank.name;
+      drawerRankBadge.className = `user-badge-level ${rank.class}`;
+      drawerUserCard.style.display = "flex";
+      drawerNav.style.display = "flex";
+      drawerLogoutWrap.style.display = "block";
+
+      // Sync drawer nav active state
+      document.querySelectorAll(".drawer-nav-btn[data-target]").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-target") === activeTab);
+      });
+
       // Show admin tab ONLY for admins
       const tabAdminBtn = document.getElementById("tab-admin");
+      const drawerAdminBtn = document.getElementById("drawer-tab-admin");
       if (currentUser.isAdmin) {
         tabAdminBtn.style.display = "block";
+        if (drawerAdminBtn) drawerAdminBtn.style.display = "flex";
       } else {
         tabAdminBtn.style.display = "none";
+        if (drawerAdminBtn) drawerAdminBtn.style.display = "none";
         // If current tab is admin and they are not admin, fallback to dashboard
         if (activeTab === "screen-admin") activeTab = "screen-dashboard";
       }
@@ -672,7 +696,10 @@
       screenAuth.classList.add("active");
       mainNavigation.style.display = "none";
       userHeaderProfile.style.display = "none";
-      
+      drawerUserCard.style.display = "none";
+      drawerNav.style.display = "none";
+      drawerLogoutWrap.style.display = "none";
+
       document.querySelectorAll(".screen-section").forEach(s => {
         if (s.id !== "screen-auth") s.classList.remove("active");
       });
@@ -741,6 +768,21 @@
       teamDetailsSidebar.classList.remove("open");
       teamDetailsSidebar.setAttribute("aria-hidden", "true");
     }
+  }
+
+  // HAMBURGER DRAWER
+  function openDrawer() {
+    hamburgerDrawer.classList.add("open");
+    hamburgerOverlay.classList.add("open");
+    document.getElementById("btn-hamburger").setAttribute("aria-expanded", "true");
+    document.body.style.overflow = "hidden";
+  }
+
+  function closeDrawer() {
+    hamburgerDrawer.classList.remove("open");
+    hamburgerOverlay.classList.remove("open");
+    document.getElementById("btn-hamburger").setAttribute("aria-expanded", "false");
+    document.body.style.overflow = "";
   }
 
   // RENDER: MINI LEADERBOARD SIDEBAR
@@ -1195,6 +1237,34 @@
       });
     });
 
+    // Hamburger Drawer — open
+    document.getElementById("btn-hamburger").addEventListener("click", () => {
+      window.WC_SOUND.playClick();
+      openDrawer();
+    });
+
+    // Hamburger Drawer — close button
+    document.getElementById("btn-close-drawer").addEventListener("click", () => {
+      window.WC_SOUND.playClick();
+      closeDrawer();
+    });
+
+    // Hamburger Drawer — overlay click closes
+    hamburgerOverlay.addEventListener("click", () => closeDrawer());
+
+    // Drawer Nav Buttons
+    document.querySelectorAll(".drawer-nav-btn[data-target]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const target = btn.getAttribute("data-target");
+        if (target) {
+          window.WC_SOUND.playClick();
+          activeTab = target;
+          closeDrawer();
+          renderAll();
+        }
+      });
+    });
+
     // Sidebar View All Rankings trigger
     document.getElementById("btn-sidebar-view-all").onclick = () => {
       window.WC_SOUND.playClick();
@@ -1205,10 +1275,11 @@
     // Close team stats sidebar
     btnCloseTeamSidebar.onclick = closeTeamSidebar;
 
-    // Close sidebar on Escape key
+    // Close sidebars on Escape key
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape") {
         closeTeamSidebar();
+        closeDrawer();
       }
     });
 
