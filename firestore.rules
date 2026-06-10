@@ -20,5 +20,10 @@ service cloud.firestore {
     match /predictions/{predId} {
       allow read, write: if true;
     }
+
+    // Allow settings changes (for time machine and test mode toggle)
+    match /settings/{settingId} {
+      allow read, write: if true;
+    }
   }
 }
