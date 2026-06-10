@@ -21,24 +21,32 @@
   <header class="app-header">
     <div class="app-brand">
       <span class="team-flag" aria-hidden="true">⚽</span>
-      <h1>El Oráculo del Mundial 2026</h1>
+      <h1 data-t="title">El Oráculo del Mundial 2026</h1>
     </div>
 
     <!-- Time Travel Status HUD -->
     <div class="time-hud" id="time-hud-display" title="Fecha y Hora simulada en el juego">
       <span class="time-hud-icon" aria-hidden="true">⏱️</span>
-      <span id="current-simulated-time-hud">Cargando fecha...</span>
+      <span id="current-simulated-time-hud" data-t="loadingDate">Cargando fecha...</span>
+    </div>
+
+    <!-- Language Selector Dropdown -->
+    <div class="lang-selector-wrapper">
+      <select id="lang-selector" class="lang-select-box" aria-label="Seleccionar idioma / Select language">
+        <option value="es">🇪🇸 ES</option>
+        <option value="en">🇺🇸 EN</option>
+      </select>
     </div>
 
     <!-- Active User Profile Indicator -->
     <div class="header-user-profile" id="user-header-profile" style="display: none;">
       <div class="user-avatar-badge" id="user-header-avatar" aria-hidden="true">🐐</div>
       <div class="user-meta-details">
-        <span class="user-name-txt" id="user-header-name">Invitado</span>
+        <span class="user-name-txt" id="user-header-name" data-t="guest">Invitado</span>
         <span class="user-score-txt" id="user-header-score">0 Pts</span>
       </div>
       <button class="filter-btn" id="btn-logout" type="button" style="padding: 0.3rem 0.6rem; margin-left: 0.5rem;" title="Cerrar sesión">
-        <span>Salir</span>
+        <span data-t="logout">Salir</span>
       </button>
     </div>
   </header>
@@ -46,13 +54,13 @@
   <!-- Screen Routing Tabs (Hidden for Unauthenticated users) -->
   <nav class="tab-navigation" id="main-navigation" style="display: none;">
     <button class="tab-btn active" id="tab-dashboard" data-target="screen-dashboard" type="button">
-      <span>🏟️ Partidos</span>
+      <span data-t="tabMatches">🏟️ Partidos</span>
     </button>
     <button class="tab-btn" id="tab-leaderboard" data-target="screen-leaderboard" type="button">
-      <span>🏆 Tabla</span>
+      <span data-t="tabLeaderboard">🏆 Tabla</span>
     </button>
     <button class="tab-btn" id="tab-admin" data-target="screen-admin" type="button" style="border-color: rgba(255,183,0,0.2);">
-      <span>⚙️ Simulador</span>
+      <span data-t="tabSimulator">⚙️ Simulador</span>
     </button>
     <button class="tab-btn" id="tab-mute-toggle" type="button" style="padding: 0.5rem; font-size: 1.1rem; border-color: rgba(255,255,255,0.05);" title="Activar/Desactivar sonido">
       <span id="mute-icon">🔊</span>
@@ -66,61 +74,60 @@
     <!-- ----------------------------------------- -->
     <section class="screen-section active" id="screen-auth">
       <div class="auth-layout">
-        <div class="glass-panel auth-box">
-          <h2 class="auth-title text-glow-cyan">Inicio de Juego</h2>
+           <h2 class="auth-title text-glow-cyan" data-t="authTitle">Inicio de Juego</h2>
           
           <div class="auth-tabs" role="tablist">
-            <button class="auth-tab-toggle active" id="auth-tab-login" role="tab" aria-selected="true" type="button">Ingresar</button>
-            <button class="auth-tab-toggle" id="auth-tab-signup" role="tab" aria-selected="false" type="button">Registrarse</button>
+            <button class="auth-tab-toggle active" id="auth-tab-login" role="tab" aria-selected="true" type="button" data-t="authLoginTab">Ingresar</button>
+            <button class="auth-tab-toggle" id="auth-tab-signup" role="tab" aria-selected="false" type="button" data-t="authSignupTab">Registrarse</button>
           </div>
 
           <!-- Login Form -->
           <form id="form-login" method="POST" action="#">
             <div class="form-group">
-              <label for="login-username">Usuario</label>
+              <label for="login-username" data-t="usernameLabel">Usuario</label>
               <div class="input-glow-wrapper">
-                <input type="text" id="login-username" name="username" autocomplete="username" placeholder="Tu nombre o alias" required minlength="3" maxlength="15">
+                <input type="text" id="login-username" name="username" autocomplete="username" placeholder="Tu nombre o alias" data-t-placeholder="usernamePlaceholder" required minlength="3" maxlength="15">
               </div>
             </div>
             <div class="form-group">
-              <label for="login-password">Contraseña</label>
+              <label for="login-password" data-t="passwordLabel">Contraseña</label>
               <div class="input-glow-wrapper">
-                <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="••••••••" required>
+                <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="••••••••" data-t-placeholder="passwordPlaceholder" required>
               </div>
             </div>
             <button class="btn-arcade-primary mt-4" id="btn-login-submit" type="submit">
-              <span>Iniciar Juego</span>
+              <span data-t="loginSubmit">Iniciar Juego</span>
             </button>
           </form>
 
           <!-- Signup Form (Hidden initially) -->
           <form id="form-signup" method="POST" action="#" style="display: none;">
             <div class="form-group">
-              <label for="signup-username">Elige un Usuario</label>
+              <label for="signup-username" data-t="signupUsernameLabel">Elige un Usuario</label>
               <div class="input-glow-wrapper">
-                <input type="text" id="signup-username" name="username" autocomplete="new-username" placeholder="Alias (3-12 letras)" required minlength="3" maxlength="12" pattern="[A-Za-z0-9_]+">
+                <input type="text" id="signup-username" name="username" autocomplete="new-username" placeholder="Alias (3-12 letras)" data-t-placeholder="signupUsernamePlaceholder" required minlength="3" maxlength="12" pattern="[A-Za-z0-9_]+">
               </div>
             </div>
             <div class="form-group">
-              <label for="signup-password">Crea una Contraseña</label>
+              <label for="signup-password" data-t="signupPasswordLabel">Crea una Contraseña</label>
               <div class="input-glow-wrapper">
-                <input type="password" id="signup-password" name="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" required minlength="6">
+                <input type="password" id="signup-password" name="password" autocomplete="new-password" placeholder="Mínimo 6 caracteres" data-t-placeholder="signupPasswordPlaceholder" required minlength="6">
               </div>
             </div>
             <div class="form-group">
-              <label for="signup-phone">Teléfono de Contacto (Opcional)</label>
+              <label for="signup-phone" data-t="signupPhoneLabel">Teléfono de Contacto (Opcional)</label>
               <div class="input-glow-wrapper">
-                <input type="tel" id="signup-phone" name="phone" placeholder="+56 9 1234 5678" autocomplete="tel">
+                <input type="tel" id="signup-phone" name="phone" placeholder="+56 9 1234 5678" data-t-placeholder="signupPhoneLabel" autocomplete="tel">
               </div>
             </div>
             
-            <div class="avatar-picker-label">Elige tu Avatar</div>
+            <div class="avatar-picker-label" data-t="signupAvatarLabel">Elige tu Avatar</div>
             <div class="avatar-grid" id="signup-avatar-grid">
               <!-- Dynamically populated in app.js -->
             </div>
 
             <button class="btn-arcade-primary" id="btn-signup-submit" type="submit">
-              <span>Crear Cuenta</span>
+              <span data-t="signupSubmit">Crear Cuenta</span>
             </button>
           </form>
         </div>
@@ -134,8 +141,8 @@
     <section class="screen-section" id="screen-dashboard">
       <div class="dashboard-info-hud">
         <div>
-          <h2 class="text-glow-green" style="font-family: var(--font-heading); text-transform: uppercase;">Pronósticos del Oráculo</h2>
-          <p class="mt-1" style="font-size: 0.85rem; color: var(--color-text-muted);">Completa tus resultados. Los partidos cierran exactamente 1 hora antes del pitazo inicial. Haz clic en las banderas para ver datos históricos de cada selección.</p>
+          <h2 class="text-glow-green" style="font-family: var(--font-heading); text-transform: uppercase;" data-t="dashboardTitle">Pronósticos del Oráculo</h2>
+          <p class="mt-1" style="font-size: 0.85rem; color: var(--color-text-muted);" data-t="dashboardDesc">Completa tus resultados. Los partidos cierran exactamente 1 hora antes del pitazo inicial. Haz clic en las banderas para ver datos históricos de cada selección.</p>
         </div>
         
         <div class="dashboard-stats">
@@ -156,9 +163,9 @@
           <!-- Filters Row -->
           <div class="dashboard-info-hud" style="margin-bottom: 1.5rem; justify-content: flex-end;">
             <div class="matches-filter-bar">
-              <button class="filter-btn active" id="btn-filter-all" data-filter="all" type="button">Todos</button>
-              <button class="filter-btn" id="btn-filter-open" data-filter="open" type="button">Abiertos</button>
-              <button class="filter-btn" id="btn-filter-closed" data-filter="closed" type="button">Cerrados</button>
+              <button class="filter-btn active" id="btn-filter-all" data-filter="all" type="button" data-t="filterAll">Todos</button>
+              <button class="filter-btn" id="btn-filter-open" data-filter="open" type="button" data-t="filterOpen">Abiertos</button>
+              <button class="filter-btn" id="btn-filter-closed" data-filter="closed" type="button" data-t="filterClosed">Cerrados</button>
             </div>
           </div>
 
@@ -171,7 +178,7 @@
         <!-- Mini Leaderboard Sidebar -->
         <aside class="dashboard-sidebar-col glass-panel" aria-label="Clasificación en tiempo real">
           <h3 class="sidebar-title text-glow-yellow" style="font-family: var(--font-heading); font-size: 1rem; text-transform: uppercase; margin-bottom: 1rem; border-bottom: 1px solid var(--color-border-glass); padding-bottom: 0.5rem; display: flex; align-items: center; gap: 0.5rem;">
-            <span>⚡</span> Clasificación en Vivo
+            <span>⚡</span> <span data-t="liveLeaderboard">Clasificación en Vivo</span>
           </h3>
           
           <div class="mini-leaderboard-list" id="mini-leaderboard-container">
@@ -179,7 +186,7 @@
           </div>
 
           <button class="btn-arcade-primary mt-4" id="btn-sidebar-view-all" type="button" style="padding: 0.5rem; font-size: 0.75rem; letter-spacing: 0.5px; box-shadow: none;">
-            <span>Ver Tabla Completa</span>
+            <span data-t="viewFullLeaderboard">Ver Tabla Completa</span>
           </button>
         </aside>
 
@@ -191,11 +198,11 @@
     <!-- SCREEN 3: LEADERBOARD                     -->
     <!-- ----------------------------------------- -->
     <section class="screen-section" id="screen-leaderboard">
-      <h2 class="leaderboard-title text-glow-yellow">Salón de la Fama</h2>
+      <h2 class="leaderboard-title text-glow-yellow" data-t="leaderboardTitle">Salón de la Fama</h2>
       
       <div class="glass-panel" style="margin-bottom: 2rem; padding: 1rem;">
-        <h3 style="font-family: var(--font-heading); font-size: 0.9rem; text-transform: uppercase; color: var(--color-neon-yellow); margin-bottom: 0.5rem;">Reglamento de Puntos del Oráculo</h3>
-        <p style="font-size: 0.8rem; color: var(--color-text-muted); line-height: 1.4;">
+        <h3 style="font-family: var(--font-heading); font-size: 0.9rem; text-transform: uppercase; color: var(--color-neon-yellow); margin-bottom: 0.5rem;" data-t="rulesTitle">Reglamento de Puntos del Oráculo</h3>
+        <p style="font-size: 0.8rem; color: var(--color-text-muted); line-height: 1.4;" data-t="rulesDesc">
           <strong>Puntaje Máximo por Partido: 10 Pts</strong><br>
           ⚽ Marcador Exacto = 10 Pts | 
           ⚖️ Misma Diferencia de Goles = 8 Pts | 
@@ -208,14 +215,14 @@
         <table class="leaderboard-table">
           <thead>
             <tr>
-              <th scope="col" class="text-center">Pos</th>
-              <th scope="col">Usuario</th>
-              <th scope="col" class="text-center">Exactos</th>
-              <th scope="col" class="text-center">Dif. Goles</th>
-              <th scope="col" class="text-center">Goles Eq.</th>
-              <th scope="col" class="text-center">Solo Gan.</th>
-              <th scope="col" class="text-center">Errados</th>
-              <th scope="col" class="text-center">Pts Totales</th>
+              <th scope="col" class="text-center" data-t="thPos">Pos</th>
+              <th scope="col" data-t="thUser">Usuario</th>
+              <th scope="col" class="text-center" data-t="thExact">Exactos</th>
+              <th scope="col" class="text-center" data-t="thGoalDiff">Dif. Goles</th>
+              <th scope="col" class="text-center" data-t="thTeamGoals">Goles Eq.</th>
+              <th scope="col" class="text-center" data-t="thOutcome">Solo Gan.</th>
+              <th scope="col" class="text-center" data-t="thIncorrect">Errados</th>
+              <th scope="col" class="text-center" data-t="thTotalPts">Pts Totales</th>
             </tr>
           </thead>
           <tbody id="leaderboard-body">
@@ -230,21 +237,21 @@
     <!-- SCREEN 4: ADMIN SIMULATOR PANEL           -->
     <!-- ----------------------------------------- -->
     <section class="screen-section" id="screen-admin">
-      <h2 class="leaderboard-title text-glow-magenta" style="margin-bottom: 2rem;">Consola de Simulación Mundial 2026</h2>
+      <h2 class="leaderboard-title text-glow-magenta" style="margin-bottom: 2rem;" data-t="adminTitle">Consola de Simulación Mundial 2026</h2>
       
       <div class="admin-panel-layout">
         
         <!-- Left: Time machine & Settings -->
         <div style="display: flex; flex-direction: column; gap: 1.5rem;">
           <div class="glass-panel">
-            <h3 class="admin-title-panel text-glow-yellow">⏱️ Máquina del Tiempo</h3>
-            <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">
+            <h3 class="admin-title-panel text-glow-yellow" data-t="timeMachineTitle">⏱️ Máquina del Tiempo</h3>
+            <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;" data-t="timeMachineDesc">
               Usa los botones para adelantar el tiempo del Mundial y ver cómo se bloquean los pronósticos en la sección de Partidos.
             </p>
             
             <!-- Test Mode Toggle Switch -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--color-border-glass);">
-              <span style="font-weight: 700; font-size: 0.85rem; font-family: var(--font-heading); color: var(--color-neon-yellow); letter-spacing: 0.5px;">MODO SIMULACIÓN / TEST</span>
+              <span style="font-weight: 700; font-size: 0.85rem; font-family: var(--font-heading); color: var(--color-neon-yellow); letter-spacing: 0.5px;" data-t="simModeLabel">MODO SIMULACIÓN / TEST</span>
               <label class="switch-container" title="Activar/Desactivar fecha simulada y edición de resultados">
                 <input type="checkbox" id="admin-toggle-testmode" checked>
                 <span class="switch-slider"></span>
@@ -255,20 +262,20 @@
               <div class="time-current-display" id="admin-time-display">Cargando...</div>
               
               <div class="time-control-buttons">
-                <button class="btn-time-adjust" id="btn-time-sub-day" type="button"><span>-1 Día</span></button>
-                <button class="btn-time-adjust" id="btn-time-add-hour" type="button"><span>+1 Hora</span></button>
-                <button class="btn-time-adjust" id="btn-time-add-day" type="button"><span>+1 Día</span></button>
+                <button class="btn-time-adjust" id="btn-time-sub-day" type="button"><span data-t="btnSubDay">-1 Día</span></button>
+                <button class="btn-time-adjust" id="btn-time-add-hour" type="button"><span data-t="btnAddHour">+1 Hora</span></button>
+                <button class="btn-time-adjust" id="btn-time-add-day" type="button"><span data-t="btnAddDay">+1 Día</span></button>
               </div>
             </div>
 
             <button class="btn-reset-db" id="btn-reset-database" type="button">
-              <span>⚠️ Restaurar Datos Iniciales</span>
+              <span data-t="btnResetDb">⚠️ Restaurar Datos Iniciales</span>
             </button>
           </div>
 
           <!-- Simulation System Log Output -->
           <div class="glass-panel">
-            <h3 class="admin-title-panel text-glow-cyan">💻 Registro del Servidor</h3>
+            <h3 class="admin-title-panel text-glow-cyan" data-t="serverLogTitle">💻 Registro del Servidor</h3>
             <div class="log-console" id="admin-log-output">
               <!-- Logs populated dynamically -->
             </div>
@@ -277,8 +284,8 @@
 
         <!-- Right: Real Match Score Simulators -->
         <div class="glass-panel">
-          <h3 class="admin-title-panel text-glow-green">🏟️ Simulador de Resultados de Partidos</h3>
-          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1.25rem;">
+          <h3 class="admin-title-panel text-glow-green" data-t="matchSimTitle">🏟️ Simulador de Resultados de Partidos</h3>
+          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1.25rem;" data-t="matchSimDesc">
             Ajusta los marcadores reales de cada partido y finalízalos para que la app calcule los puntos de los jugadores y actualice la tabla en tiempo real.
           </p>
           
@@ -306,30 +313,30 @@
       <p class="team-sidebar-desc" id="team-sidebar-overview">Cargando información...</p>
       
       <div class="team-stats-group">
-        <h3 class="team-stats-section-title">Historial Mundialista</h3>
+        <h3 class="team-stats-section-title" data-t="sidebarHistoryTitle">Historial Mundialista</h3>
         
         <div class="team-stat-item">
-          <span class="team-stat-lbl">Participaciones</span>
+          <span class="team-stat-lbl" data-t="sidebarParticipations">Participaciones</span>
           <span class="team-stat-val text-glow-cyan" id="team-stat-participations">22</span>
         </div>
         
         <div class="team-stat-item">
-          <span class="team-stat-lbl">Títulos Mundiales</span>
+          <span class="team-stat-lbl" data-t="sidebarTitles">Títulos Mundiales</span>
           <span class="team-stat-val text-glow-yellow" id="team-stat-titles">5 🏆</span>
         </div>
         
         <div class="team-stat-item" style="flex-direction: column; align-items: flex-start; gap: 0.25rem;">
-          <span class="team-stat-lbl">Mejor Resultado</span>
+          <span class="team-stat-lbl" data-t="sidebarBestResult">Mejor Resultado</span>
           <span class="team-stat-val text-glow-green" id="team-stat-best" style="font-size: 0.85rem;">Campeón</span>
         </div>
       </div>
 
       <div class="team-stats-group" style="margin-top: 1.5rem;">
-        <h3 class="team-stats-section-title">Atributos (Valoración)</h3>
+        <h3 class="team-stats-section-title" data-t="sidebarAttributes">Atributos (Valoración)</h3>
         
         <div class="team-attribute-bar">
           <div class="team-attribute-lbl">
-            <span>Ataque</span>
+            <span data-t="sidebarAttack">Ataque</span>
             <span id="team-attr-attack-val">94</span>
           </div>
           <div class="stat-bar-track">
@@ -339,7 +346,7 @@
         
         <div class="team-attribute-bar" style="margin-top: 0.75rem;">
           <div class="team-attribute-lbl">
-            <span>Defensa</span>
+            <span data-t="sidebarDefense">Defensa</span>
             <span id="team-attr-defense-val">87</span>
           </div>
           <div class="stat-bar-track">
@@ -348,7 +355,7 @@
         </div>
       </div>
       
-      <div style="margin-top: 2.5rem; font-size: 0.75rem; color: var(--color-text-dim); text-align: center; line-height: 1.4;">
+      <div style="margin-top: 2.5rem; font-size: 0.75rem; color: var(--color-text-dim); text-align: center; line-height: 1.4;" data-t="sidebarClickNotice">
         * Haz clic en la bandera de cualquier otra selección en los partidos para ver su rendimiento histórico.
       </div>
     </div>

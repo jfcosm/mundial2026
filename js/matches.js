@@ -636,7 +636,9 @@
   // Helper to format kickoff dates
   function formatMatchTime(kickoffStr) {
     const date = new Date(kickoffStr);
-    return date.toLocaleString('es-ES', {
+    const lang = localStorage.getItem("wc_lang") || "es";
+    const locale = lang === "en" ? "en-US" : "es-ES";
+    return date.toLocaleString(locale, {
       weekday: 'short',
       month: 'short',
       day: 'numeric',

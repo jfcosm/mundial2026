@@ -1559,3 +1559,50 @@ input:checked + .switch-slider:before {
   cursor: default;
 }
 
+/* Language Selector Styles */
+.lang-selector-wrapper {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  background: rgba(20, 22, 35, 0.75);
+  border: 1px solid var(--color-border-glass);
+  border-radius: 30px;
+  padding: 0.4rem 0.8rem;
+  transition: all var(--transition-fast);
+  justify-content: center;
+}
+
+.lang-selector-wrapper:hover {
+  border-color: var(--color-neon-cyan);
+  box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);
+}
+
+.lang-select-box {
+  background: transparent;
+  color: var(--color-text-primary);
+  border: none;
+  font-family: var(--font-heading);
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  outline: none;
+  padding-right: 0.25rem;
+  text-align: center;
+  text-align-last: center;
+}
+
+.lang-select-box option {
+  background: var(--color-bg-dark);
+  color: var(--color-text-primary);
+  font-family: var(--font-body);
+  padding: 0.5rem;
+}
+
+@media (max-width: 680px) {
+  .lang-selector-wrapper {
+    margin-top: 0.5rem;
+    align-self: center;
+    width: 120px;
+  }
+}
+
