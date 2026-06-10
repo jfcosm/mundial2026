@@ -382,32 +382,43 @@
           ${lockHtml}
         </div>
         
-        <div class="match-teams-vs">
-          <!-- Home Team Row -->
-          <div class="team-row">
-            <div class="${(isKnockout && !isResolved) ? 'team-info-disabled' : 'team-info'}" data-team="${match.homeTeam}" title="${(isKnockout && !isResolved) ? '' : 'Ver estadísticas de ' + match.homeTeam}">
-              <span class="team-flag" aria-hidden="true">${match.homeFlag}</span>
-              <span class="team-name" title="${match.homeTeam}">${match.homeTeam}</span>
-              <span class="team-code">${match.homeCode}</span>
-            </div>
-            
+        <div class="match-teams-vs" style="flex-direction: column; gap: 0.75rem;">
+          <!-- Scoreboard Centered at Top -->
+          <div style="display: flex; justify-content: center; margin-bottom: 0.25rem;">
             <div class="scoreboard-score-inputs">
               <input type="text" inputmode="numeric" pattern="[0-9]*" class="score-input-box" 
                      id="pred-home-${match.id}" value="${userPred.homeGoals}" ${inputDisabledAttr}
                      aria-label="Goles de ${match.homeTeam}" maxlength="2">
-              <span class="score-separator">:</span>
+              <span class="score-separator" style="margin: 0 0.25rem;">:</span>
               <input type="text" inputmode="numeric" pattern="[0-9]*" class="score-input-box" 
                      id="pred-away-${match.id}" value="${userPred.awayGoals}" ${inputDisabledAttr}
                      aria-label="Goles de ${match.awayTeam}" maxlength="2">
             </div>
           </div>
 
-          <!-- Away Team Row -->
-          <div class="team-row" style="margin-top: 0.25rem;">
-            <div class="${(isKnockout && !isResolved) ? 'team-info-disabled' : 'team-info'}" data-team="${match.awayTeam}" title="${(isKnockout && !isResolved) ? '' : 'Ver estadísticas de ' + match.awayTeam}">
-              <span class="team-flag" aria-hidden="true">${match.awayFlag}</span>
-              <span class="team-name" title="${match.awayTeam}">${match.awayTeam}</span>
-              <span class="team-code">${match.awayCode}</span>
+          <!-- Teams Row Below inputs -->
+          <div style="display: flex; justify-content: space-between; align-items: center; gap: 0.5rem; text-align: center;">
+            <!-- Home Team Column -->
+            <div class="${(isKnockout && !isResolved) ? 'team-info-disabled' : 'team-info'}" 
+                 data-team="${match.homeTeam}" 
+                 title="${(isKnockout && !isResolved) ? '' : 'Ver estadísticas de ' + match.homeTeam}"
+                 style="flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem; cursor: ${(isKnockout && !isResolved) ? 'default' : 'pointer'};">
+              <span class="team-flag" aria-hidden="true" style="font-size: 2.2rem; margin: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${match.homeFlag}</span>
+              <span class="team-name" title="${match.homeTeam}" style="font-size: 0.9rem; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; font-weight: 700;">${match.homeTeam}</span>
+              <span class="team-code" style="font-size: 0.65rem; margin: 0; padding: 0.05rem 0.2rem; background: rgba(255,255,255,0.05); border-radius: 3px; color: var(--color-text-muted); font-family: var(--font-heading);">${match.homeCode}</span>
+            </div>
+
+            <!-- VS Divider -->
+            <div style="font-family: var(--font-heading); font-weight: 900; color: var(--color-text-dim); font-size: 0.75rem; min-width: 20px;">VS</div>
+
+            <!-- Away Team Column -->
+            <div class="${(isKnockout && !isResolved) ? 'team-info-disabled' : 'team-info'}" 
+                 data-team="${match.awayTeam}" 
+                 title="${(isKnockout && !isResolved) ? '' : 'Ver estadísticas de ' + match.awayTeam}"
+                 style="flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 0.2rem; cursor: ${(isKnockout && !isResolved) ? 'default' : 'pointer'};">
+              <span class="team-flag" aria-hidden="true" style="font-size: 2.2rem; margin: 0; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));">${match.awayFlag}</span>
+              <span class="team-name" title="${match.awayTeam}" style="font-size: 0.9rem; max-width: 100%; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; display: block; font-weight: 700;">${match.awayTeam}</span>
+              <span class="team-code" style="font-size: 0.65rem; margin: 0; padding: 0.05rem 0.2rem; background: rgba(255,255,255,0.05); border-radius: 3px; color: var(--color-text-muted); font-family: var(--font-heading);">${match.awayCode}</span>
             </div>
           </div>
         </div>

@@ -117,7 +117,7 @@
       snapshot.forEach(doc => {
         matches.push(doc.data());
       });
-      matches.sort((a, b) => a.id.localeCompare(b.id));
+      matches.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
 
       const hasNewMatches = matches.some(m => m.id === "m26" || m.id === "k1");
       if (matches.length === 0 || !hasNewMatches) {
