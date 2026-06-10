@@ -242,7 +242,16 @@
               Usa los botones para adelantar el tiempo del Mundial y ver cómo se bloquean los pronósticos en la sección de Partidos.
             </p>
             
-            <div class="time-slider-container">
+            <!-- Test Mode Toggle Switch -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; background: rgba(0,0,0,0.2); padding: 0.75rem; border-radius: 8px; border: 1px solid var(--color-border-glass);">
+              <span style="font-weight: 700; font-size: 0.85rem; font-family: var(--font-heading); color: var(--color-neon-yellow); letter-spacing: 0.5px;">MODO SIMULACIÓN / TEST</span>
+              <label class="switch-container" title="Activar/Desactivar fecha simulada y edición de resultados">
+                <input type="checkbox" id="admin-toggle-testmode" checked>
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+            
+            <div class="time-slider-container" id="admin-time-controls-box">
               <div class="time-current-display" id="admin-time-display">Cargando...</div>
               
               <div class="time-control-buttons">

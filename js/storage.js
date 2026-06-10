@@ -7,7 +7,8 @@
     matches: [],
     predictions: {},
     users: [],
-    simulatedTime: DEFAULT_SIMULATED_TIME
+    simulatedTime: DEFAULT_SIMULATED_TIME,
+    testModeActive: true
   };
 
   const DEFAULT_USERS = [
@@ -150,6 +151,17 @@
       window.WC_CACHE.predictions = predictions;
       onDataChangedCallback();
     }, err => console.error("Error syncing predictions: ", err));
+
+    // 5. Sync testMode setting
+    window.db.collection("settings").doc("testMode").onSnapshot(doc => {
+      if (doc.exists) {
+        window.WC_CACHE.testModeActive = doc.data().active;
+      } else {
+        window.WC_CACHE.testModeActive = true;
+        window.db.collection("settings").doc("testMode").set({ active: true });
+      }
+      onDataChangedCallback();
+    }, err => console.error("Error syncing testMode: ", err));
   }
 
   // Read data interfaces (reading from real-time local cache)
@@ -166,7 +178,11 @@
   }
 
   function getSimulatedTime() {
-    return window.WC_CACHE.simulatedTime;
+    if (window.WC_CACHE.testModeActive) {
+      return window.WC_CACHE.simulatedTime;
+    } else {
+      return new Date().getTime(); // Actual browser system time!
+    }
   }
 
   // Write data interfaces (writing directly to Firestore)
@@ -323,6 +339,10 @@
     // Reset time
     const timeRef = window.db.collection("settings").doc("simTime");
     batch.set(timeRef, { time: DEFAULT_SIMULATED_TIME });
+
+    // Reset testMode to true
+    const testModeRef = window.db.collection("settings").doc("testMode");
+    batch.set(testModeRef, { active: true });
 
     return batch.commit();
   }

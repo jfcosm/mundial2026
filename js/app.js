@@ -127,16 +127,32 @@
     });
   }
 
-  // GLOBAL ROUTER & VIEWS
   function renderAll() {
+    const isTestActive = window.WC_CACHE.testModeActive;
     const simTime = window.WC_STORAGE.getSimulatedTime();
     const formattedTime = new Date(simTime).toLocaleString('es-ES', {
       year: 'numeric', month: 'short', day: 'numeric',
       hour: '2-digit', minute: '2-digit'
     });
 
-    currentSimulatedTimeHud.innerText = formattedTime;
-    adminTimeDisplay.innerText = formattedTime;
+    // Update Header HUD
+    if (isTestActive) {
+      currentSimulatedTimeHud.innerHTML = `<span style="color: var(--color-neon-yellow); margin-right: 0.25rem;">🛠️ TEST:</span> ${formattedTime}`;
+    } else {
+      currentSimulatedTimeHud.innerHTML = `<span style="color: var(--color-neon-green); text-shadow: 0 0 8px var(--color-neon-green); margin-right: 0.25rem;">🔴 EN VIVO:</span> ${formattedTime}`;
+    }
+    
+    // Update Admin Time display
+    if (isTestActive) {
+      adminTimeDisplay.innerText = formattedTime;
+      adminTimeDisplay.style.color = "var(--color-neon-yellow)";
+      adminTimeDisplay.style.borderColor = "#222";
+    } else {
+      adminTimeDisplay.innerText = "Sincronizado con Reloj Real";
+      adminTimeDisplay.style.color = "var(--color-neon-green)";
+      adminTimeDisplay.style.borderColor = "var(--color-neon-green)";
+      adminTimeDisplay.style.textShadow = "0 0 8px rgba(0, 255, 135, 0.4)";
+    }
 
     if (currentUser) {
       // Logged In layout
@@ -512,6 +528,31 @@
 
   // RENDER: ADMIN SIMULATOR
   function renderAdmin() {
+    const isTestActive = window.WC_CACHE.testModeActive;
+    
+    // Sync the checkbox
+    document.getElementById("admin-toggle-testmode").checked = isTestActive;
+    
+    // Disable or enable time travel buttons
+    const btnSubDay = document.getElementById("btn-time-sub-day");
+    const btnAddHour = document.getElementById("btn-time-add-hour");
+    const btnAddDay = document.getElementById("btn-time-add-day");
+    const timeSliderContainer = document.getElementById("admin-time-controls-box");
+
+    if (isTestActive) {
+      btnSubDay.disabled = false;
+      btnAddHour.disabled = false;
+      btnAddDay.disabled = false;
+      timeSliderContainer.style.opacity = "1";
+      timeSliderContainer.style.pointerEvents = "auto";
+    } else {
+      btnSubDay.disabled = true;
+      btnAddHour.disabled = true;
+      btnAddDay.disabled = true;
+      timeSliderContainer.style.opacity = "0.4";
+      timeSliderContainer.style.pointerEvents = "none";
+    }
+
     const matches = window.WC_STORAGE.getMatches();
     const predictions = window.WC_STORAGE.getPredictions();
     const simTime = window.WC_STORAGE.getSimulatedTime();
@@ -718,6 +759,29 @@
       btnEl.classList.add("active");
       renderDashboard();
     }
+
+    // Toggle Test Mode switch
+    document.getElementById("admin-toggle-testmode").onchange = (e) => {
+      const active = e.target.checked;
+      window.db.collection("settings").doc("testMode").set({ active: active })
+        .then(() => {
+          if (active) {
+            window.WC_SOUND.playSuccess();
+            showToast("Modo Simulación activado.");
+            addLog("Modo de Simulación y Pruebas habilitado por el Administrador.", "system");
+          } else {
+            window.WC_SOUND.playError();
+            showToast("Modo Producción (Hora Real) activado.");
+            addLog("Modo de Producción (Hora Real en Vivo) habilitado. Controles de tiempo desactivados.", "system");
+          }
+          renderAll();
+        })
+        .catch(err => {
+          window.WC_SOUND.playError();
+          showToast("Error al cambiar modo de prueba.", "error");
+          console.error("Firebase testMode save error: ", err);
+        });
+    };
 
     // Time Machine adjustments
     document.getElementById("btn-time-sub-day").onclick = () => adjustSimTime(-24 * 3600 * 1000);
