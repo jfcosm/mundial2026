@@ -783,6 +783,7 @@
       const newUser = {
         username: name,
         password: pass,
+        phone: document.getElementById("signup-phone").value.trim(),
         avatar: selectedSignupAvatar,
         isAdmin: false
       };
