@@ -68,6 +68,7 @@
       loginSubmit: "Iniciar Juego",
       signupUsernameLabel: "Elige un Usuario",
       signupUsernamePlaceholder: "Alias (3-12 letras)",
+      signupUsernameTitle: "Solo letras (a-z), números y guiones bajos (_). Sin espacios, guiones ni símbolos.",
       signupPasswordLabel: "Crea una Contraseña",
       signupPasswordPlaceholder: "Mínimo 6 caracteres",
       signupPhoneLabel: "Teléfono de Contacto (Opcional)",
@@ -195,6 +196,7 @@
       loginSubmit: "Start Game",
       signupUsernameLabel: "Choose a Username",
       signupUsernamePlaceholder: "Alias (3-12 letters)",
+      signupUsernameTitle: "Letters (a-z), numbers, and underscores (_) only. No spaces, hyphens, or special characters.",
       signupPasswordLabel: "Create a Password",
       signupPasswordPlaceholder: "Minimum 6 characters",
       signupPhoneLabel: "Contact Phone (Optional)",
@@ -486,6 +488,10 @@
     document.querySelectorAll("[data-t-placeholder]").forEach(el => {
       const key = el.getAttribute("data-t-placeholder");
       el.placeholder = t(key);
+    });
+    document.querySelectorAll("[data-t-title]").forEach(el => {
+      const key = el.getAttribute("data-t-title");
+      el.title = t(key);
     });
   }
 
