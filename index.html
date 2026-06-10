@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Predice los marcadores de la Copa Mundial FIFA 2026 y compite con amigos en este simulador de polla de fútbol gamificado.">
+  <title>Mundial 2026 Oracle - Pronósticos y Tabla de Posiciones</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Floating Toast Notifications -->
+  <div id="toast-container" class="toast-container" aria-live="polite"></div>
+
+  <!-- Header Banner -->
+  <header class="app-header">
+    <div class="app-brand">
+      <span class="team-flag" aria-hidden="true">⚽</span>
+      <h1>Mundial 2026 Oracle</h1>
+    </div>
+
+    <!-- Time Travel Status HUD -->
+    <div class="time-hud" id="time-hud-display" title="Fecha y Hora simulada en el juego">
+      <span class="time-hud-icon" aria-hidden="true">⏱️</span>
+      <span id="current-simulated-time-hud">Cargando fecha...</span>
+    </div>
+
+    <!-- Active User Profile Indicator -->
+    <div class="header-user-profile" id="user-header-profile" style="display: none;">
+      <div class="user-avatar-badge" id="user-header-avatar" aria-hidden="true">🐐</div>
+      <div class="user-meta-details">
+        <span class="user-name-txt" id="user-header-name">Invitado</span>
+        <span class="user-score-txt" id="user-header-score">0 Pts</span>
+      </div>
+      <button class="filter-btn" id="btn-logout" type="button" style="padding: 0.3rem 0.6rem; margin-left: 0.5rem;" title="Cerrar sesión">
+        <span>Salir</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Screen Routing Tabs (Hidden for Unauthenticated users) -->
+  <nav class="tab-navigation" id="main-navigation" style="display: none;">
+    <button class="tab-btn active" id="tab-dashboard" data-target="screen-dashboard" type="button">
+      <span>🏟️ Partidos</span>
+    </button>
+    <button class="tab-btn" id="tab-leaderboard" data-target="screen-leaderboard" type="button">
+      <span>🏆 Tabla</span>
+    </button>
+    <button class="tab-btn" id="tab-admin" data-target="screen-admin" type="button" style="border-color: rgba(255,183,0,0.2);">
+      <span>⚙️ Simulador</span>
+    </button>
+    <button class="tab-btn" id="tab-mute-toggle" type="button" style="padding: 0.5rem; font-size: 1.1rem; border-color: rgba(255,255,255,0.05);" title="Activar/Desactivar sonido">
+      <span id="mute-icon">🔊</span>
+    </button>
+  </nav>
+
+  <main class="screen-container">
+
+    <!-- ----------------------------------------- -->
+    <!-- SCREEN 1: LOGIN / REGISTER (UNAUTH)      -->
+    <!-- ----------------------------------------- -->
+    <section class="screen-section active" id="screen-auth">
+      <div class="auth-layout">
+        <div class="glass-panel auth-box">
+          <h2 class="auth-title text-glow-cyan">Inicio de Juego</h2>
+          
+          <div class="auth-tabs" role="tablist">
+            <button class="auth-tab-toggle active" id="auth-tab-login" role="tab" aria-selected="true" type="button">Ingresar</button>
+            <button class="auth-tab-toggle" id="auth-tab-signup" role="tab" aria-selected="false" type="button">Registrarse</button>
+          </div>
+
+          <!-- Login Form -->
+          <form id="form-login" method="POST" action="#">
+            <div class="form-group">
+              <label for="login-username">Usuario</label>
+              <div class="input-glow-wrapper">
+                <input type="text" id="login-username" name="username" autocomplete="username" placeholder="Tu nombre o alias" required minlength="3" maxlength="15">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="login-password">Contraseña</label>
+              <div class="input-glow-wrapper">
+                <input type="password" id="login-password" name="password" autocomplete="current-password" placeholder="••••••••" required>
+              </div>
+            </div>
+            <button class="btn-arcade-primary mt-4" id="btn-login-submit" type="submit">
+              <span>Iniciar Juego</span>
+            </button>
+          </form>
+
+          <!-- Signup Form (Hidden initially) -->
+          <form id="form-signup" method="POST" action="#" style="display: none;">
+            <div class="form-group">
+              <label for="signup-username">Elige un Usuario</label>
+              <div class="input-glow-wrapper">
+                <input type="text" id="signup-username" name="username" autocomplete="new-username" placeholder="Alias (3-12 letras)" required minlength="3" maxlength="12" pattern="[A-Za-z0-9_]+">
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="signup-password">Crea una Contraseña</label>
+              <div class="input-glow-wrapper">
+                <input type="password" id="signup-password" name="password" autocomplete="new-password" placeholder="Mínimo 3 caracteres" required minlength="3">
+              </div>
+            </div>
+            
+            <div class="avatar-picker-label">Elige tu Avatar</div>
+            <div class="avatar-grid" id="signup-avatar-grid">
+              <!-- Dynamically populated in app.js -->
+            </div>
+
+            <button class="btn-arcade-primary" id="btn-signup-submit" type="submit">
+              <span>Crear Cuenta</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </section>
+
+
+    <!-- ----------------------------------------- -->
+    <!-- SCREEN 2: MATCHES DASHBOARD               -->
+    <!-- ----------------------------------------- -->
+    <section class="screen-section" id="screen-dashboard">
+      <div class="dashboard-info-hud">
+        <div>
+          <h2 class="text-glow-green" style="font-family: var(--font-heading); text-transform: uppercase;">Quiniela de Pronósticos</h2>
+          <p class="mt-1" style="font-size: 0.85rem; color: var(--color-text-muted);">Completa tus resultados. Los partidos cierran exactamente 1 hora antes del pitazo inicial.</p>
+        </div>
+        
+        <div class="dashboard-stats">
+          <div class="stat-badge" id="stats-total-score">
+            <span>🏆</span> <span id="dashboard-hud-score">0 Pts</span>
+          </div>
+          <div class="stat-badge" id="stats-level-rank">
+            <span>🛡️</span> <span id="dashboard-hud-rank">Rookie</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Filters Row -->
+      <div class="dashboard-info-hud" style="margin-bottom: 1.5rem; justify-content: flex-end;">
+        <div class="matches-filter-bar">
+          <button class="filter-btn active" id="btn-filter-all" data-filter="all" type="button">Todos</button>
+          <button class="filter-btn" id="btn-filter-open" data-filter="open" type="button">Abiertos</button>
+          <button class="filter-btn" id="btn-filter-closed" data-filter="closed" type="button">Cerrados</button>
+        </div>
+      </div>
+
+      <!-- Matches Grid -->
+      <div class="matches-grid" id="matches-grid-container">
+        <!-- Match Cards populated by App.js -->
+      </div>
+    </section>
+
+
+    <!-- ----------------------------------------- -->
+    <!-- SCREEN 3: LEADERBOARD                     -->
+    <!-- ----------------------------------------- -->
+    <section class="screen-section" id="screen-leaderboard">
+      <h2 class="leaderboard-title text-glow-yellow">Salón de la Fama</h2>
+      
+      <div class="glass-panel" style="margin-bottom: 2rem; padding: 1rem;">
+        <h3 style="font-family: var(--font-heading); font-size: 0.9rem; text-transform: uppercase; color: var(--color-neon-yellow); margin-bottom: 0.5rem;">Tabla de Puntajes</h3>
+        <p style="font-size: 0.8rem; color: var(--color-text-muted); line-height: 1.4;">
+          <strong>Puntaje Máximo por Partido: 10 Pts</strong><br>
+          ⚽ Marcador Exacto = 10 Pts | 
+          ⚖️ Misma Diferencia de Goles = 8 Pts | 
+          🎯 Acierto Goles de un Equipo = 6 Pts | 
+          📊 Solo Resultado (G/E/P) = 5 Pts
+        </p>
+      </div>
+
+      <div class="leaderboard-table-wrapper">
+        <table class="leaderboard-table">
+          <thead>
+            <tr>
+              <th scope="col" class="text-center">Pos</th>
+              <th scope="col">Usuario</th>
+              <th scope="col" class="text-center">Exactos</th>
+              <th scope="col" class="text-center">Dif. Goles</th>
+              <th scope="col" class="text-center">Goles Eq.</th>
+              <th scope="col" class="text-center">Solo Gan.</th>
+              <th scope="col" class="text-center">Errados</th>
+              <th scope="col" class="text-center">Pts Totales</th>
+            </tr>
+          </thead>
+          <tbody id="leaderboard-body">
+            <!-- Dynamically populated in app.js -->
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+
+    <!-- ----------------------------------------- -->
+    <!-- SCREEN 4: ADMIN SIMULATOR PANEL           -->
+    <!-- ----------------------------------------- -->
+    <section class="screen-section" id="screen-admin">
+      <h2 class="leaderboard-title text-glow-magenta" style="margin-bottom: 2rem;">Consola de Simulación Mundial 2026</h2>
+      
+      <div class="admin-panel-layout">
+        
+        <!-- Left: Time machine & Settings -->
+        <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+          <div class="glass-panel">
+            <h3 class="admin-title-panel text-glow-yellow">⏱️ Máquina del Tiempo</h3>
+            <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1rem;">
+              Usa los botones para adelantar el tiempo del Mundial y ver cómo se bloquean los pronósticos en la sección de Partidos.
+            </p>
+            
+            <div class="time-slider-container">
+              <div class="time-current-display" id="admin-time-display">Cargando...</div>
+              
+              <div class="time-control-buttons">
+                <button class="btn-time-adjust" id="btn-time-sub-day" type="button"><span>-1 Día</span></button>
+                <button class="btn-time-adjust" id="btn-time-add-hour" type="button"><span>+1 Hora</span></button>
+                <button class="btn-time-adjust" id="btn-time-add-day" type="button"><span>+1 Día</span></button>
+              </div>
+            </div>
+
+            <button class="btn-reset-db" id="btn-reset-database" type="button">
+              <span>⚠️ Restaurar Datos Iniciales</span>
+            </button>
+          </div>
+
+          <!-- Simulation System Log Output -->
+          <div class="glass-panel">
+            <h3 class="admin-title-panel text-glow-cyan">💻 Registro del Servidor</h3>
+            <div class="log-console" id="admin-log-output">
+              <!-- Logs populated dynamically -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Real Match Score Simulators -->
+        <div class="glass-panel">
+          <h3 class="admin-title-panel text-glow-green">🏟️ Simulador de Resultados de Partidos</h3>
+          <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1.25rem;">
+            Ajusta los marcadores reales de cada partido y finalízalos para que la app calcule los puntos de los jugadores y actualice la tabla en tiempo real.
+          </p>
+          
+          <div class="admin-matches-list" id="admin-matches-container">
+            <!-- Dynamic list of simulated inputs for matching scores -->
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+  </main>
+
+  <!-- Script Modules -->
+  <script src="js/sound.js"></script>
+  <script src="js/matches.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
