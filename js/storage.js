@@ -119,7 +119,8 @@
       });
       matches.sort((a, b) => a.id.localeCompare(b.id));
 
-      if (matches.length === 0) {
+      const hasNewMatches = matches.some(m => m.id === "m26" || m.id === "k1");
+      if (matches.length === 0 || !hasNewMatches) {
         seedMatches();
       } else {
         window.WC_CACHE.matches = matches;
@@ -134,7 +135,10 @@
         users.push(doc.data());
       });
 
-      if (users.length === 0) {
+      const adminUser = users.find(u => u.username === "admin");
+      const hasUpdatedAdmin = adminUser && adminUser.password === "admin2026";
+
+      if (users.length === 0 || !hasUpdatedAdmin) {
         seedUsers();
       } else {
         window.WC_CACHE.users = users;
