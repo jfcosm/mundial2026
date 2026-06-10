@@ -1,16 +1,77 @@
 // World Cup 2026 Matches Database and Team Statistics
 (function() {
   const INITIAL_MATCHES = [
-    // --- LUNES 22/6 ---
+    // --- PARTIDOS INAUGURALES ---
     {
       id: "m1",
+      homeTeam: "México",
+      homeCode: "MEX",
+      homeFlag: "🇲🇽",
+      awayTeam: "Sudáfrica",
+      awayCode: "RSA",
+      awayFlag: "🇿🇦",
+      kickoff: "2026-06-11T17:00:00-06:00",
+      group: "Grupo A",
+      stadium: "Estadio Azteca, CDMX",
+      realHomeGoals: null,
+      realAwayGoals: null,
+      status: "scheduled"
+    },
+    {
+      id: "m2",
+      homeTeam: "Corea del Sur",
+      homeCode: "KOR",
+      homeFlag: "🇰🇷",
+      awayTeam: "Chequia",
+      awayCode: "CZE",
+      awayFlag: "🇨🇿",
+      kickoff: "2026-06-11T20:30:00-06:00",
+      group: "Grupo A",
+      stadium: "Estadio Tres de Marzo, Guadalajara",
+      realHomeGoals: null,
+      realAwayGoals: null,
+      status: "scheduled"
+    },
+    {
+      id: "m3",
+      homeTeam: "Canadá",
+      homeCode: "CAN",
+      homeFlag: "🇨🇦",
+      awayTeam: "Bosnia y Herzegovina",
+      awayCode: "BIH",
+      awayFlag: "🇧🇦",
+      kickoff: "2026-06-12T16:00:00-04:00",
+      group: "Grupo B",
+      stadium: "BMO Field, Toronto",
+      realHomeGoals: null,
+      realAwayGoals: null,
+      status: "scheduled"
+    },
+    {
+      id: "m4",
+      homeTeam: "Estados Unidos",
+      homeCode: "USA",
+      homeFlag: "🇺🇸",
+      awayTeam: "Paraguay",
+      awayCode: "PAR",
+      awayFlag: "🇵🇾",
+      kickoff: "2026-06-12T19:30:00-07:00",
+      group: "Grupo D",
+      stadium: "SoFi Stadium, Inglewood",
+      realHomeGoals: null,
+      realAwayGoals: null,
+      status: "scheduled"
+    },
+    // --- LUNES 22/6 ---
+    {
+      id: "m5",
       homeTeam: "Argentina",
       homeCode: "ARG",
       homeFlag: "🇦🇷",
       awayTeam: "Austria",
       awayCode: "AUT",
       awayFlag: "🇦🇹",
-      kickoff: "2026-06-22T13:00:00-05:00", // Dallas
+      kickoff: "2026-06-22T13:00:00-05:00",
       group: "Grupo J",
       stadium: "AT&T Stadium, Arlington",
       realHomeGoals: null,
@@ -18,14 +79,14 @@
       status: "scheduled"
     },
     {
-      id: "m2",
+      id: "m6",
       homeTeam: "Francia",
       homeCode: "FRA",
       homeFlag: "🇫🇷",
       awayTeam: "Irak",
       awayCode: "IRQ",
       awayFlag: "🇮🇶",
-      kickoff: "2026-06-22T17:00:00-04:00", // Philadelphia
+      kickoff: "2026-06-22T17:00:00-04:00",
       group: "Grupo I",
       stadium: "Lincoln Financial Field, Filadelfia",
       realHomeGoals: null,
@@ -33,14 +94,14 @@
       status: "scheduled"
     },
     {
-      id: "m3",
+      id: "m7",
       homeTeam: "Noruega",
       homeCode: "NOR",
       homeFlag: "🇳🇴",
       awayTeam: "Senegal",
       awayCode: "SEN",
       awayFlag: "🇸🇳",
-      kickoff: "2026-06-22T20:00:00-04:00", // NY/NJ
+      kickoff: "2026-06-22T20:00:00-04:00",
       group: "Grupo I",
       stadium: "MetLife Stadium, East Rutherford",
       realHomeGoals: null,
@@ -48,14 +109,14 @@
       status: "scheduled"
     },
     {
-      id: "m4",
+      id: "m8",
       homeTeam: "Jordania",
       homeCode: "JOR",
       homeFlag: "🇯🇴",
       awayTeam: "Argelia",
       awayCode: "ALG",
       awayFlag: "🇩🇿",
-      kickoff: "2026-06-22T20:00:00-07:00", // San Francisco (11:00 PM ET)
+      kickoff: "2026-06-22T20:00:00-07:00",
       group: "Grupo J",
       stadium: "Levi's Stadium, Santa Clara",
       realHomeGoals: null,
@@ -64,7 +125,7 @@
     },
     // --- MARTES 23/6 ---
     {
-      id: "m5",
+      id: "m9",
       homeTeam: "Portugal",
       homeCode: "POR",
       homeFlag: "🇵🇹",
@@ -79,7 +140,7 @@
       status: "scheduled"
     },
     {
-      id: "m6",
+      id: "m10",
       homeTeam: "Inglaterra",
       homeCode: "ENG",
       homeFlag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿",
@@ -94,7 +155,7 @@
       status: "scheduled"
     },
     {
-      id: "m7",
+      id: "m11",
       homeTeam: "Panamá",
       homeCode: "PAN",
       homeFlag: "🇵🇦",
@@ -109,7 +170,7 @@
       status: "scheduled"
     },
     {
-      id: "m8",
+      id: "m12",
       homeTeam: "Colombia",
       homeCode: "COL",
       homeFlag: "🇨🇴",
@@ -125,7 +186,7 @@
     },
     // --- MIÉRCOLES 24/6 ---
     {
-      id: "m9",
+      id: "m13",
       homeTeam: "Suiza",
       homeCode: "SUI",
       homeFlag: "🇨🇭",
@@ -140,7 +201,7 @@
       status: "scheduled"
     },
     {
-      id: "m10",
+      id: "m14",
       homeTeam: "Bosnia y Herzegovina",
       homeCode: "BIH",
       homeFlag: "🇧🇦",
@@ -155,7 +216,7 @@
       status: "scheduled"
     },
     {
-      id: "m11",
+      id: "m15",
       homeTeam: "Marruecos",
       homeCode: "MAR",
       homeFlag: "🇲🇦",
@@ -170,7 +231,7 @@
       status: "scheduled"
     },
     {
-      id: "m12",
+      id: "m16",
       homeTeam: "Escocia",
       homeCode: "SCO",
       homeFlag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿",
@@ -185,7 +246,7 @@
       status: "scheduled"
     },
     {
-      id: "m13",
+      id: "m17",
       homeTeam: "Sudáfrica",
       homeCode: "RSA",
       homeFlag: "🇿🇦",
@@ -200,7 +261,7 @@
       status: "scheduled"
     },
     {
-      id: "m14",
+      id: "m18",
       homeTeam: "Chequia",
       homeCode: "CZE",
       homeFlag: "🇨🇿",
@@ -216,7 +277,7 @@
     },
     // --- JUEVES 25/6 ---
     {
-      id: "m15",
+      id: "m19",
       homeTeam: "Curazao",
       homeCode: "CUW",
       homeFlag: "🇨🇼",
@@ -231,7 +292,7 @@
       status: "scheduled"
     },
     {
-      id: "m16",
+      id: "m20",
       homeTeam: "Ecuador",
       homeCode: "ECU",
       homeFlag: "🇪🇨",
@@ -246,7 +307,7 @@
       status: "scheduled"
     },
     {
-      id: "m17",
+      id: "m21",
       homeTeam: "Túnez",
       homeCode: "TUN",
       homeFlag: "🇹🇳",
@@ -261,7 +322,7 @@
       status: "scheduled"
     },
     {
-      id: "m18",
+      id: "m22",
       homeTeam: "Japón",
       homeCode: "JPN",
       homeFlag: "🇯🇵",
@@ -276,7 +337,7 @@
       status: "scheduled"
     },
     {
-      id: "m19",
+      id: "m23",
       homeTeam: "Turquía",
       homeCode: "TUR",
       homeFlag: "🇹🇷",
@@ -291,7 +352,7 @@
       status: "scheduled"
     },
     {
-      id: "m20",
+      id: "m24",
       homeTeam: "Paraguay",
       homeCode: "PAR",
       homeFlag: "🇵🇾",
@@ -307,7 +368,7 @@
     },
     // --- VIERNES 26/6 ---
     {
-      id: "m21",
+      id: "m25",
       homeTeam: "Noruega",
       homeCode: "NOR",
       homeFlag: "🇳🇴",
@@ -322,7 +383,7 @@
       status: "scheduled"
     },
     {
-      id: "m22",
+      id: "m26",
       homeTeam: "Senegal",
       homeCode: "SEN",
       homeFlag: "🇸🇳",
@@ -337,7 +398,7 @@
       status: "scheduled"
     },
     {
-      id: "m23",
+      id: "m27",
       homeTeam: "Cabo Verde",
       homeCode: "CPV",
       homeFlag: "🇨🇻",
@@ -352,7 +413,7 @@
       status: "scheduled"
     },
     {
-      id: "m24",
+      id: "m28",
       homeTeam: "Uruguay",
       homeCode: "URU",
       homeFlag: "🇺🇾",
@@ -367,7 +428,7 @@
       status: "scheduled"
     },
     {
-      id: "m25",
+      id: "m29",
       homeTeam: "Nueva Zelanda",
       homeCode: "NZL",
       homeFlag: "🇳🇿",
@@ -382,7 +443,7 @@
       status: "scheduled"
     },
     {
-      id: "m26",
+      id: "m30",
       homeTeam: "Egipto",
       homeCode: "EGY",
       homeFlag: "🇪🇬",

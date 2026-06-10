@@ -119,8 +119,9 @@
       });
       matches.sort((a, b) => new Date(a.kickoff).getTime() - new Date(b.kickoff).getTime());
 
-      const hasNewMatches = matches.some(m => m.id === "m26" || m.id === "k1");
-      if (matches.length === 0 || !hasNewMatches) {
+      const hasCorrectInaugural = matches.some(m => m.id === "m1" && m.homeTeam === "México");
+      const hasAllMatches = matches.length === window.WC_DATA.INITIAL_MATCHES.length;
+      if (matches.length === 0 || !hasCorrectInaugural || !hasAllMatches) {
         seedMatches();
       } else {
         window.WC_CACHE.matches = matches;
