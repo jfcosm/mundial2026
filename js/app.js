@@ -207,7 +207,15 @@
       knockoutQF: "Cuartos de Final",
       knockoutSF: "Semifinales",
       knockoutThird: "Tercer Puesto",
-      knockoutFinal: "Gran Final"
+      knockoutFinal: "Gran Final",
+      // Admin Users section
+      adminUsersTitle: "Usuarios Registrados",
+      adminUsersDesc: "Lista de usuarios reales registrados en la plataforma. Muestra detalles de la cuenta y metadatos de conexión.",
+      thUserPhone: "Teléfono",
+      thUserCreated: "Fecha Registro",
+      thUserLastLogin: "Última Conexión",
+      thUserBrowser: "Navegador/OS de Creación",
+      thUserScore: "Puntaje"
     },
     en: {
       locale: "en-US",
@@ -356,7 +364,15 @@
       knockoutQF: "Quarterfinals",
       knockoutSF: "Semifinals",
       knockoutThird: "Third Place Play-off",
-      knockoutFinal: "Final"
+      knockoutFinal: "Final",
+      // Admin Users section
+      adminUsersTitle: "Registered Users",
+      adminUsersDesc: "List of real users registered on the platform. Shows account details and connection metadata.",
+      thUserPhone: "Phone",
+      thUserCreated: "Registration Date",
+      thUserLastLogin: "Last Connection",
+      thUserBrowser: "Browser of Creation",
+      thUserScore: "Score"
     }
   };
 
@@ -537,6 +553,27 @@
     return group
       .replace('Grupo', 'Group')
       .replace('Octavos - Llave', 'Round of 16 - Bracket');
+  }
+
+  function getBrowserInfo() {
+    const ua = navigator.userAgent;
+    let browser = "Unknown Browser";
+    let os = "Unknown OS";
+    
+    if (ua.includes("Firefox")) browser = "Firefox";
+    else if (ua.includes("SamsungBrowser")) browser = "Samsung Browser";
+    else if (ua.includes("Opera") || ua.includes("OPR")) browser = "Opera";
+    else if (ua.includes("Edge") || ua.includes("Edg")) browser = "Edge";
+    else if (ua.includes("Chrome")) browser = "Chrome";
+    else if (ua.includes("Safari")) browser = "Safari";
+    
+    if (ua.includes("Windows")) os = "Windows";
+    else if (ua.includes("Macintosh") || ua.includes("Mac OS")) os = "macOS";
+    else if (ua.includes("iPhone") || ua.includes("iPad")) os = "iOS";
+    else if (ua.includes("Android")) os = "Android";
+    else if (ua.includes("Linux")) os = "Linux";
+    
+    return `${browser} on ${os}`;
   }
 
   function updateStaticTranslations() {
@@ -1539,6 +1576,73 @@
 
       adminMatchesContainer.appendChild(row);
     });
+
+    // Render registered users list (excluding dummy users)
+    const adminUsersTbody = document.getElementById("admin-users-tbody");
+    if (adminUsersTbody) {
+      adminUsersTbody.innerHTML = "";
+      
+      const allUsers = window.WC_STORAGE.getUsers() || [];
+      const dummyUsernames = ["admin", "messi10", "ronaldo7", "neymarjr", "chicharito"];
+      
+      const realUsers = allUsers.filter(u => !dummyUsernames.includes(u.username.toLowerCase()));
+      
+      // Sort real users by creation date descending (newest first)
+      realUsers.sort((a, b) => {
+        const dateA = a.createdAt ? new Date(a.createdAt) : new Date(0);
+        const dateB = b.createdAt ? new Date(b.createdAt) : new Date(0);
+        return dateB - dateA;
+      });
+
+      if (realUsers.length === 0) {
+        const emptyRow = document.createElement("tr");
+        emptyRow.innerHTML = `
+          <td colspan="6" class="text-center" style="color: var(--color-text-dim); padding: 2rem;">
+            ${lang === 'en' ? 'No real users registered yet.' : 'No hay usuarios reales registrados todavía.'}
+          </td>
+        `;
+        adminUsersTbody.appendChild(emptyRow);
+      } else {
+        realUsers.forEach(user => {
+          const row = document.createElement("tr");
+          
+          let createdStr = "-";
+          if (user.createdAt) {
+            createdStr = new Date(user.createdAt).toLocaleString(lang === 'en' ? 'en-US' : 'es-ES', {
+              month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+          }
+          
+          let lastLoginStr = "-";
+          if (user.lastSignInAt) {
+            lastLoginStr = new Date(user.lastSignInAt).toLocaleString(lang === 'en' ? 'en-US' : 'es-ES', {
+              month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+          }
+          
+          const phoneStr = user.phone ? user.phone : "-";
+          const browserStr = user.userAgent ? user.userAgent : "-";
+          
+          const leaderboard = window.WC_STORAGE.calculateLeaderboard();
+          const uLeaderboard = leaderboard.find(u => u.username === user.username) || { points: 0 };
+          
+          row.innerHTML = `
+            <td>
+              <div class="user-col">
+                <span class="user-col-avatar">${user.avatar || '⚽'}</span>
+                <span class="user-col-name">${user.username}</span>
+              </div>
+            </td>
+            <td class="text-center">${phoneStr}</td>
+            <td class="text-center">${createdStr}</td>
+            <td class="text-center">${lastLoginStr}</td>
+            <td class="text-center" style="font-size: 0.75rem; color: var(--color-text-muted);">${browserStr}</td>
+            <td class="text-center points-col" style="font-size: 1rem;">${uLeaderboard.points} ${t("pts")}</td>
+          `;
+          adminUsersTbody.appendChild(row);
+        });
+      }
+    }
   }
 
   // SOUND TOGGLE UI
@@ -1775,6 +1879,14 @@
         .then(doc => {
           if (doc.exists) {
             currentUser = doc.data();
+            
+            // Capture last sign in time and update Firestore (background update)
+            const nowIso = new Date().toISOString();
+            currentUser.lastSignInAt = nowIso;
+            window.db.collection("users").doc(name).update({
+              lastSignInAt: nowIso
+            }).catch(e => console.error("Error updating connection time:", e));
+
             sessionStorage.setItem("wc_active_user", JSON.stringify(currentUser));
             
             window.WC_SOUND.playSuccess();
@@ -1791,7 +1903,10 @@
               phone: "",
               avatar: "⚽",
               isAdmin: name.toLowerCase() === "admin",
-              points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0
+              points: 0, exact: 0, difference: 0, teamGoals: 0, outcome: 0, incorrect: 0,
+              createdAt: new Date().toISOString(),
+              lastSignInAt: new Date().toISOString(),
+              userAgent: getBrowserInfo()
             };
             return window.db.collection("users").doc(name).set(newUser).then(() => {
               currentUser = newUser;
@@ -1876,7 +1991,10 @@
             difference: 0,
             teamGoals: 0,
             outcome: 0,
-            incorrect: 0
+            incorrect: 0,
+            createdAt: new Date().toISOString(),
+            lastSignInAt: new Date().toISOString(),
+            userAgent: getBrowserInfo()
           };
           return window.db.collection("users").doc(name).set(newUser).then(() => newUser);
         })

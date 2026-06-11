@@ -383,6 +383,32 @@
         </div>
 
       </div>
+
+      <!-- Full-Width: User Management Section -->
+      <div class="glass-panel" style="grid-column: 1 / -1; margin-top: 2rem;">
+        <h3 class="admin-title-panel text-glow-cyan">👥 <span data-t="adminUsersTitle">Usuarios Registrados</span></h3>
+        <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1.25rem;" data-t="adminUsersDesc">
+          Lista de usuarios reales registrados en la plataforma. Muestra detalles de la cuenta y metadatos de conexión.
+        </p>
+        
+        <div class="leaderboard-table-wrapper">
+          <table class="leaderboard-table" id="admin-users-table">
+            <thead>
+              <tr>
+                <th scope="col" data-t="thUser">Usuario</th>
+                <th scope="col" class="text-center" data-t="thUserPhone">Teléfono</th>
+                <th scope="col" class="text-center" data-t="thUserCreated">Fecha Registro</th>
+                <th scope="col" class="text-center" data-t="thUserLastLogin">Última Conexión</th>
+                <th scope="col" class="text-center" data-t="thUserBrowser">Navegador/OS de Creación</th>
+                <th scope="col" class="text-center" data-t="thUserScore">Puntaje</th>
+              </tr>
+            </thead>
+            <tbody id="admin-users-tbody">
+              <!-- Dynamically populated in app.js -->
+            </tbody>
+          </table>
+        </div>
+      </div>
     </section>
 
   </main>
