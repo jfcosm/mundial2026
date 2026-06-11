@@ -1149,15 +1149,9 @@
 
   /* Groups Standings Grid */
   .groups-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+    display: flex;
+    flex-direction: column;
     gap: 2rem;
-  }
-
-  @media (max-width: 480px) {
-    .groups-grid {
-      grid-template-columns: 1fr;
-    }
   }
 
   .group-box {
