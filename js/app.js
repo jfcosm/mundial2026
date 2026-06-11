@@ -87,7 +87,7 @@
       signupSubmit: "Crear Cuenta",
       // Dashboard screen
       dashboardTitle: "Pronósticos del Oráculo",
-      dashboardDesc: "Completa tus resultados. Los partidos cierran exactamente 1 hora antes del pitazo inicial. Haz clic en las banderas para ver datos históricos de cada selección.",
+      dashboardDesc: "Completa tus resultados. Los partidos cierran exactamente 15 minutos antes del pitazo inicial. Haz clic en las banderas para ver datos históricos de cada selección.",
       filterAll: "Todos",
       filterOpen: "Abiertos",
       filterClosed: "Cerrados",
@@ -177,7 +177,7 @@
       logSimDisabled: "Modo de Producción (Hora Real en Vivo) habilitado. Controles de tiempo desactivados.",
       syncRealClock: "Sincronizado con Reloj Real",
       noMatchesCategory: "No hay partidos en esta categoría para mostrar.",
-      closesInTooltip: "Pronósticos cierran 1h antes del partido",
+      closesInTooltip: "Pronósticos cierran 15 min antes del partido",
       viewStatsFor: "Ver estadísticas de {team}",
       pointsResult_exact: "Marcador exacto (+10 pts)",
       pointsResult_difference: "Diferencia de goles exacta (+8 pts)",
@@ -215,7 +215,7 @@
       signupSubmit: "Create Account",
       // Dashboard screen
       dashboardTitle: "Oracle Predictions",
-      dashboardDesc: "Enter your predictions. Matches lock exactly 1 hour before kickoff. Click on the flags to view historical stats for each team.",
+      dashboardDesc: "Enter your predictions. Matches lock exactly 15 minutes before kickoff. Click on the flags to view historical stats for each team.",
       filterAll: "All",
       filterOpen: "Open",
       filterClosed: "Closed",
@@ -305,7 +305,7 @@
       logSimDisabled: "Production Mode (Live Real Time) enabled. Time machine controls disabled.",
       syncRealClock: "Synced with Real Clock",
       noMatchesCategory: "No matches to display in this category.",
-      closesInTooltip: "Predictions close 1h before kickoff",
+      closesInTooltip: "Predictions close 15 min before kickoff",
       viewStatsFor: "View stats for {team}",
       pointsResult_exact: "Exact score (+10 pts)",
       pointsResult_difference: "Exact goal difference (+8 pts)",
@@ -855,7 +855,7 @@
       } else if (isLocked) {
         lockHtml = `<span class="match-lock-status locked">${t("lblClosed")}</span>`;
       } else {
-        const lockTime = new Date(match.kickoff).getTime() - 60 * 60 * 1000;
+        const lockTime = new Date(match.kickoff).getTime() - 15 * 60 * 1000;
         const diffMs = lockTime - simTime;
         const hours = Math.floor(diffMs / (3600 * 1000));
         const minutes = Math.floor((diffMs % (3600 * 1000)) / (60 * 1000));

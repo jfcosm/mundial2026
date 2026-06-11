@@ -189,12 +189,12 @@
     "Irán": { participations: 6, titles: 0, bestResult: "Fase de grupos", attack: 75, defense: 76, overview: "Un conjunto defensivamente muy disciplinado y letal al contragolpe." }
   };
 
-  // A match is lockable if the current time is less than 1 hour before kickoff.
+  // A match is lockable if the current time is less than 15 minutes before kickoff.
   // currentSimulatedTime is a millisecond timestamp representing simulated time.
   function isMatchLocked(match, currentSimulatedTime) {
     const kickoffTime = new Date(match.kickoff).getTime();
-    const oneHourInMs = 60 * 60 * 1000;
-    return (kickoffTime - currentSimulatedTime) <= oneHourInMs;
+    const fifteenMinInMs = 15 * 60 * 1000;
+    return (kickoffTime - currentSimulatedTime) <= fifteenMinInMs;
   }
 
   // Helper to format kickoff dates — always shown in Chile time (America/Santiago)
