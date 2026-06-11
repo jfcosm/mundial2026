@@ -45,6 +45,9 @@
       <button class="drawer-nav-btn active" id="drawer-tab-dashboard" data-target="screen-dashboard" type="button">
         <span data-t="tabMatches">🏟️ Partidos</span>
       </button>
+      <button class="drawer-nav-btn" id="drawer-tab-standings" data-target="screen-standings" type="button">
+        <span data-t="tabStandings">📊 Posiciones</span>
+      </button>
       <button class="drawer-nav-btn" id="drawer-tab-leaderboard" data-target="screen-leaderboard" type="button">
         <span data-t="tabLeaderboard">🏆 Tabla</span>
       </button>
@@ -111,6 +114,9 @@
   <nav class="tab-navigation" id="main-navigation" style="display: none;">
     <button class="tab-btn active" id="tab-dashboard" data-target="screen-dashboard" type="button">
       <span data-t="tabMatches">🏟️ Partidos</span>
+    </button>
+    <button class="tab-btn" id="tab-standings" data-target="screen-standings" type="button">
+      <span data-t="tabStandings">📊 Posiciones</span>
     </button>
     <button class="tab-btn" id="tab-leaderboard" data-target="screen-leaderboard" type="button">
       <span data-t="tabLeaderboard">🏆 Tabla</span>
@@ -245,6 +251,33 @@
           </button>
         </aside>
 
+      </div>
+    </section>
+
+
+    <!-- ----------------------------------------- -->
+    <!-- SCREEN 5: TOURNAMENT STANDINGS & BRACKETS -->
+    <!-- ----------------------------------------- -->
+    <section class="screen-section" id="screen-standings">
+      <div class="standings-header">
+        <h2 class="leaderboard-title text-glow-cyan" style="margin-bottom: 1.5rem;" data-t="standingsTitle">Torneo Mundial 2026</h2>
+        
+        <!-- Standings sub-tabs -->
+        <div class="standings-tabs" role="tablist">
+          <button class="standings-tab-toggle active" id="standings-tab-groups" role="tab" aria-selected="true" type="button" data-t="phaseGroups">Fase de grupos</button>
+          <button class="standings-tab-toggle" id="standings-tab-knockout" role="tab" aria-selected="false" type="button" data-t="phaseKnockout">Fase de eliminación directa</button>
+        </div>
+      </div>
+
+      <!-- Sub-tab contents -->
+      <div id="standings-groups-content" class="standings-content-panel active">
+        <!-- Grid of group tables populated by JS -->
+        <div class="groups-grid" id="groups-grid-container"></div>
+      </div>
+
+      <div id="standings-knockout-content" class="standings-content-panel" style="display: none;">
+        <!-- Knockout rounds populated by JS -->
+        <div class="knockout-rounds-container" id="knockout-rounds-container"></div>
       </div>
     </section>
 

@@ -3,6 +3,7 @@
   // Select DOM Elements
   const screenAuth = document.getElementById("screen-auth");
   const screenDashboard = document.getElementById("screen-dashboard");
+  const screenStandings = document.getElementById("screen-standings");
   const screenLeaderboard = document.getElementById("screen-leaderboard");
   const screenAdmin = document.getElementById("screen-admin");
   const mainNavigation = document.getElementById("main-navigation");
@@ -68,6 +69,7 @@
       tabMatches: "🏟️ Partidos",
       tabLeaderboard: "🏆 Tabla",
       tabSimulator: "📋 Resultados",
+      tabStandings: "📊 Posiciones",
       // Auth screen
       authTitle: "Inicio de Juego",
       authLoginTab: "Ingresar",
@@ -185,7 +187,27 @@
       pointsResult_outcome: "Solo resultado (+5 pts)",
       pointsResult_incorrect: "Resultado incorrecto (0 pts)",
       pointsResult_none: "Sin pronóstico o partido no finalizado",
-      logUserEntered: "Usuario ingresado: {username}"
+      logUserEntered: "Usuario ingresado: {username}",
+      // Standings screen
+      standingsTitle: "Torneo Mundial 2026",
+      phaseGroups: "Fase de grupos",
+      phaseKnockout: "Fase de eliminación directa",
+      thTeam: "Equipo",
+      thPlayed: "PJ",
+      thWon: "G",
+      thDrawn: "E",
+      thLost: "P",
+      thGF: "GF",
+      thGC: "GC",
+      thGD: "DG",
+      thPts: "Pts",
+      thForm: "Últimos 5",
+      knockoutR32: "Dieciseisavos de Final",
+      knockoutR16: "Octavos de Final",
+      knockoutQF: "Cuartos de Final",
+      knockoutSF: "Semifinales",
+      knockoutThird: "Tercer Puesto",
+      knockoutFinal: "Gran Final"
     },
     en: {
       locale: "en-US",
@@ -196,6 +218,7 @@
       tabMatches: "🏟️ Matches",
       tabLeaderboard: "🏆 Leaderboard",
       tabSimulator: "📋 Results",
+      tabStandings: "📊 Standings",
       // Auth screen
       authTitle: "Game Login",
       authLoginTab: "Login",
@@ -313,7 +336,27 @@
       pointsResult_outcome: "Outcome only (+5 pts)",
       pointsResult_incorrect: "Incorrect outcome (0 pts)",
       pointsResult_none: "No prediction or match unfinished",
-      logUserEntered: "User logged in: {username}"
+      logUserEntered: "User logged in: {username}",
+      // Standings screen
+      standingsTitle: "World Cup 2026 Tournament",
+      phaseGroups: "Group Stage",
+      phaseKnockout: "Knockout Phase",
+      thTeam: "Team",
+      thPlayed: "GP",
+      thWon: "W",
+      thDrawn: "D",
+      thLost: "L",
+      thGF: "GF",
+      thGC: "GA",
+      thGD: "GD",
+      thPts: "Pts",
+      thForm: "Form",
+      knockoutR32: "Round of 32",
+      knockoutR16: "Round of 16",
+      knockoutQF: "Quarterfinals",
+      knockoutSF: "Semifinals",
+      knockoutThird: "Third Place Play-off",
+      knockoutFinal: "Final"
     }
   };
 
@@ -481,7 +524,12 @@
     // Handle placeholders
     return name
       .replace('1º Grupo', '1st Group')
-      .replace('2º Grupo', '2nd Group');
+      .replace('2º Grupo', '2nd Group')
+      .replace('3º mejor', '3rd best')
+      .replace('Llave', 'Bracket')
+      .replace('Ganador', 'Winner')
+      .replace('Perdedor', 'Loser')
+      .replace('Grupo', 'Group');
   }
 
   function translateGroup(group, lang) {
@@ -689,6 +737,7 @@
         renderDashboard();
         renderMiniLeaderboard();
       }
+      if (activeTab === "screen-standings") renderStandings();
       if (activeTab === "screen-leaderboard") renderLeaderboard();
       if (activeTab === "screen-admin") renderAdmin();
     } else {
@@ -1009,6 +1058,281 @@
     });
   }
 
+  // RENDER: STANDINGS & TOURNAMENT VIEW
+  function renderStandings() {
+    const matches = window.WC_STORAGE.getMatches();
+    const lang = localStorage.getItem("wc_lang") || "es";
+    
+    // 1. RENDER GROUP STAGE STANDINGS
+    const groupsGridContainer = document.getElementById("groups-grid-container");
+    if (groupsGridContainer) {
+      groupsGridContainer.innerHTML = "";
+      
+      // Calculate group standings
+      const groupMatches = matches.filter(m => !m.isKnockout);
+      const groupNamesSet = new Set();
+      groupMatches.forEach(m => {
+        if (m.group) groupNamesSet.add(m.group);
+      });
+      // Sort group names (Grupo A, Grupo B, etc.)
+      const groupNames = Array.from(groupNamesSet).sort((a, b) => a.localeCompare(b));
+      
+      groupNames.forEach(groupName => {
+        const groupMatchesFiltered = groupMatches.filter(m => m.group === groupName);
+        
+        // Find all unique teams in this group
+        const teamsMap = {};
+        groupMatchesFiltered.forEach(m => {
+          if (!teamsMap[m.homeTeam]) {
+            teamsMap[m.homeTeam] = { name: m.homeTeam, code: m.homeCode, flag: m.homeFlag, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, gd: 0, points: 0, matches: [] };
+          }
+          if (!teamsMap[m.awayTeam]) {
+            teamsMap[m.awayTeam] = { name: m.awayTeam, code: m.awayCode, flag: m.awayFlag, pj: 0, g: 0, e: 0, p: 0, gf: 0, gc: 0, gd: 0, points: 0, matches: [] };
+          }
+        });
+        
+        // Sort matches chronologically to calculate form correctly
+        const sortedMatches = [...groupMatchesFiltered].sort((a, b) => new Date(a.kickoff) - new Date(b.kickoff));
+        
+        sortedMatches.forEach(m => {
+          if (m.realHomeGoals !== null && m.realAwayGoals !== null) {
+            const hG = parseInt(m.realHomeGoals, 10);
+            const aG = parseInt(m.realAwayGoals, 10);
+            
+            teamsMap[m.homeTeam].pj += 1;
+            teamsMap[m.awayTeam].pj += 1;
+            
+            teamsMap[m.homeTeam].gf += hG;
+            teamsMap[m.homeTeam].gc += aG;
+            teamsMap[m.awayTeam].gf += aG;
+            teamsMap[m.awayTeam].gc += hG;
+            
+            if (hG > aG) {
+              teamsMap[m.homeTeam].g += 1;
+              teamsMap[m.homeTeam].points += 3;
+              teamsMap[m.homeTeam].matches.push('W');
+              
+              teamsMap[m.awayTeam].p += 1;
+              teamsMap[m.awayTeam].matches.push('L');
+            } else if (hG < aG) {
+              teamsMap[m.awayTeam].g += 1;
+              teamsMap[m.awayTeam].points += 3;
+              teamsMap[m.awayTeam].matches.push('W');
+              
+              teamsMap[m.homeTeam].p += 1;
+              teamsMap[m.homeTeam].matches.push('L');
+            } else {
+              teamsMap[m.homeTeam].e += 1;
+              teamsMap[m.homeTeam].points += 1;
+              teamsMap[m.homeTeam].matches.push('D');
+              
+              teamsMap[m.awayTeam].e += 1;
+              teamsMap[m.awayTeam].points += 1;
+              teamsMap[m.awayTeam].matches.push('D');
+            }
+          }
+        });
+        
+        // Compute GD
+        Object.values(teamsMap).forEach(team => {
+          team.gd = team.gf - team.gc;
+        });
+        
+        // Sort teams using standard FIFA group criteria
+        const sortedTeams = Object.values(teamsMap).sort((a, b) => {
+          if (b.points !== a.points) return b.points - a.points;
+          if (b.gd !== a.gd) return b.gd - a.gd;
+          if (b.gf !== a.gf) return b.gf - a.gf;
+          return a.name.localeCompare(b.name);
+        });
+        
+        // Generate HTML table for this group
+        const groupBox = document.createElement("div");
+        groupBox.className = "group-box";
+        
+        const titleText = translateGroup(groupName, lang);
+        groupBox.innerHTML = `
+          <h3 class="group-title text-glow-yellow">${titleText}</h3>
+          <div class="standings-table-wrapper">
+            <table class="standings-table">
+              <thead>
+                <tr>
+                  <th scope="col" class="text-center" style="width: 30px;">#</th>
+                  <th scope="col">${t("thTeam")}</th>
+                  <th scope="col" class="text-center" style="width: 35px;">${t("thPlayed")}</th>
+                  <th scope="col" class="text-center" style="width: 30px;">${t("thWon")}</th>
+                  <th scope="col" class="text-center" style="width: 30px;">${t("thDrawn")}</th>
+                  <th scope="col" class="text-center" style="width: 30px;">${t("thLost")}</th>
+                  <th scope="col" class="text-center" style="width: 35px;">${t("thGF")}</th>
+                  <th scope="col" class="text-center" style="width: 35px;">${t("thGC")}</th>
+                  <th scope="col" class="text-center" style="width: 35px;">${t("thGD")}</th>
+                  <th scope="col" class="text-center" style="width: 40px;">${t("thPts")}</th>
+                  <th scope="col" class="text-center" style="width: 120px;">${t("thForm")}</th>
+                </tr>
+              </thead>
+              <tbody>
+              </tbody>
+            </table>
+          </div>
+        `;
+        
+        const tbody = groupBox.querySelector("tbody");
+        sortedTeams.forEach((team, idx) => {
+          const row = document.createElement("tr");
+          // Add qualify-row class to top 2 teams
+          if (idx < 2) {
+            row.className = "qualify-row";
+          }
+          
+          // Form indicator circles
+          let formHtml = `<div class="form-container">`;
+          for (let i = 0; i < 5; i++) {
+            if (i < team.matches.length) {
+              const res = team.matches[i];
+              if (res === 'W') {
+                formHtml += `<span class="form-circle win" title="${lang === 'en' ? 'Win' : 'Ganado'}">✓</span>`;
+              } else if (res === 'L') {
+                formHtml += `<span class="form-circle loss" title="${lang === 'en' ? 'Loss' : 'Perdido'}">✗</span>`;
+              } else {
+                formHtml += `<span class="form-circle draw" title="${lang === 'en' ? 'Draw' : 'Empatado'}">-</span>`;
+              }
+            } else {
+              formHtml += `<span class="form-circle empty" title="${lang === 'en' ? 'Unplayed' : 'Pendiente'}"></span>`;
+            }
+          }
+          formHtml += `</div>`;
+          
+          const teamNameTrans = translateTeamName(team.name, lang);
+          
+          row.innerHTML = `
+            <td class="pos-cell">${idx + 1}</td>
+            <td>
+              <div class="team-cell-content" data-team="${team.name}">
+                <span class="team-flag" aria-hidden="true">${team.flag}</span>
+                <span class="team-name">${teamNameTrans}</span>
+              </div>
+            </td>
+            <td class="text-center">${team.pj}</td>
+            <td class="text-center">${team.g}</td>
+            <td class="text-center">${team.e}</td>
+            <td class="text-center">${team.p}</td>
+            <td class="text-center">${team.gf}</td>
+            <td class="text-center">${team.gc}</td>
+            <td class="text-center">${team.gd > 0 ? '+' + team.gd : team.gd}</td>
+            <td class="text-center bold-pts">${team.points}</td>
+            <td class="text-center">${formHtml}</td>
+          `;
+          
+          // Add click listener for flag / team info click
+          row.querySelector(".team-cell-content").addEventListener("click", () => {
+            openTeamSidebar(team.name);
+          });
+          
+          tbody.appendChild(row);
+        });
+        
+        groupsGridContainer.appendChild(groupBox);
+      });
+    }
+
+    // 2. RENDER KNOCKOUT STAGE BRACKETS
+    const knockoutContainer = document.getElementById("knockout-rounds-container");
+    if (knockoutContainer) {
+      knockoutContainer.innerHTML = "";
+      
+      const knockoutMatches = matches.filter(m => m.isKnockout === true);
+      
+      // Define rounds grouping
+      const roundsList = [
+        { nameKey: "knockoutR32", matchIds: ["k1", "k2", "k3", "k4", "k5", "k6", "k7", "k8"] },
+        { nameKey: "knockoutR16", matchIds: ["k9", "k10", "k11", "k12"] },
+        { nameKey: "knockoutQF", matchIds: ["k13", "k14", "k15", "k16"] },
+        { nameKey: "knockoutSF", matchIds: ["k17", "k18"] },
+        { nameKey: "knockoutThird", matchIds: ["k19"] },
+        { nameKey: "knockoutFinal", matchIds: ["k20"] }
+      ];
+      
+      roundsList.forEach(roundDef => {
+        const roundMatches = knockoutMatches.filter(m => roundDef.matchIds.includes(m.id));
+        if (roundMatches.length === 0) return;
+        
+        const roundDiv = document.createElement("div");
+        roundDiv.className = "knockout-round";
+        
+        const roundTitle = t(roundDef.nameKey);
+        roundDiv.innerHTML = `
+          <h3 class="knockout-round-title">${roundTitle}</h3>
+          <div class="knockout-matches-grid"></div>
+        `;
+        
+        const grid = roundDiv.querySelector(".knockout-matches-grid");
+        
+        roundMatches.forEach(match => {
+          const card = document.createElement("div");
+          card.className = "knockout-match-card";
+          
+          const localeStr = lang === 'en' ? 'en-US' : 'es-ES';
+          const matchTime = new Date(match.kickoff).toLocaleString(localeStr, {
+            month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit'
+          });
+          
+          const stadiumText = match.stadium || "";
+          
+          // Winners highlight
+          const isFinished = match.status === "finished";
+          const hGoals = isFinished ? parseInt(match.realHomeGoals, 10) : "";
+          const aGoals = isFinished ? parseInt(match.realAwayGoals, 10) : "";
+          
+          const homeWinner = isFinished && hGoals > aGoals;
+          const awayWinner = isFinished && aGoals > hGoals;
+          
+          const homeNameTrans = translateTeamName(match.homeTeam, lang);
+          const awayNameTrans = translateTeamName(match.awayTeam, lang);
+          
+          card.innerHTML = `
+            <div class="knockout-match-meta">
+              <span>📅 ${matchTime}</span>
+              <span style="font-size: 0.7rem; max-width: 160px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;" title="${stadiumText}">📍 ${stadiumText.split(',')[0]}</span>
+            </div>
+            <div class="knockout-match-teams">
+              <div class="knockout-match-team ${homeWinner ? 'winner' : ''}">
+                <div class="knockout-match-team-info" data-team="${match.homeTeam}">
+                  <span class="team-flag" aria-hidden="true">${match.homeFlag}</span>
+                  <span class="knockout-team-name">${homeNameTrans}</span>
+                </div>
+                <span class="knockout-team-score">${hGoals !== "" ? hGoals : "-"}</span>
+              </div>
+              <div class="knockout-match-team ${awayWinner ? 'winner' : ''}">
+                <div class="knockout-match-team-info" data-team="${match.awayTeam}">
+                  <span class="team-flag" aria-hidden="true">${match.awayFlag}</span>
+                  <span class="knockout-team-name">${awayNameTrans}</span>
+                </div>
+                <span class="knockout-team-score">${aGoals !== "" ? aGoals : "-"}</span>
+              </div>
+            </div>
+          `;
+          
+          // Add click listener for team historical details
+          card.querySelectorAll(".knockout-match-team-info").forEach(element => {
+            const tName = element.getAttribute("data-team");
+            if (tName && !tName.includes("Grupo") && !tName.includes("Group") && !tName.includes("Llave") && !tName.includes("Winner") && !tName.includes("Perdedor") && !tName.includes("Ganador") && !tName.includes("Semi")) {
+              element.addEventListener("click", () => {
+                openTeamSidebar(tName);
+              });
+            } else {
+              element.style.cursor = "default";
+            }
+          });
+          
+          grid.appendChild(card);
+        });
+        
+        roundDiv.appendChild(grid);
+        knockoutContainer.appendChild(roundDiv);
+      });
+    }
+  }
+
   // RENDER: LEADERBOARD
   function renderLeaderboard() {
     const leaderboard = window.WC_STORAGE.calculateLeaderboard();
@@ -1236,6 +1560,38 @@
         }
       });
     });
+
+    // Standings Sub-Tabs
+    const subTabGroups = document.getElementById("standings-tab-groups");
+    const subTabKnockout = document.getElementById("standings-tab-knockout");
+    const panelGroups = document.getElementById("standings-groups-content");
+    const panelKnockout = document.getElementById("standings-knockout-content");
+
+    if (subTabGroups && subTabKnockout) {
+      subTabGroups.addEventListener("click", () => {
+        window.WC_SOUND.playClick();
+        subTabGroups.classList.add("active");
+        subTabGroups.setAttribute("aria-selected", "true");
+        subTabKnockout.classList.remove("active");
+        subTabKnockout.setAttribute("aria-selected", "false");
+        panelGroups.classList.add("active");
+        panelGroups.style.display = "block";
+        panelKnockout.classList.remove("active");
+        panelKnockout.style.display = "none";
+      });
+
+      subTabKnockout.addEventListener("click", () => {
+        window.WC_SOUND.playClick();
+        subTabKnockout.classList.add("active");
+        subTabKnockout.setAttribute("aria-selected", "true");
+        subTabGroups.classList.remove("active");
+        subTabGroups.setAttribute("aria-selected", "false");
+        panelKnockout.classList.add("active");
+        panelKnockout.style.display = "block";
+        panelGroups.classList.remove("active");
+        panelGroups.style.display = "none";
+      });
+    }
 
     // Hamburger Drawer — open
     document.getElementById("btn-hamburger").addEventListener("click", () => {
