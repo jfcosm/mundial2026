@@ -63,7 +63,8 @@
     const batch = window.db.batch();
     window.WC_DATA.INITIAL_MATCHES.forEach(match => {
       const ref = window.db.collection("matches").doc(match.id);
-      batch.set(ref, match);
+      // Use merge to preserve realHomeGoals/realAwayGoals if already set by admin
+      batch.set(ref, match, { merge: true });
     });
     return batch.commit();
   }
@@ -121,7 +122,11 @@
 
       const hasCorrectInaugural = matches.some(m => m.id === "m1" && m.homeTeam === "México");
       const hasAllMatches = matches.length === window.WC_DATA.INITIAL_MATCHES.length;
-      if (matches.length === 0 || !hasCorrectInaugural || !hasAllMatches) {
+      // Force re-seed if the kickoff of m1 in Firestore doesn't match the code
+      const m1InFirestore = matches.find(m => m.id === "m1");
+      const m1InCode = window.WC_DATA.INITIAL_MATCHES.find(m => m.id === "m1");
+      const kickoffMatchesCode = m1InFirestore && m1InCode && m1InFirestore.kickoff === m1InCode.kickoff;
+      if (matches.length === 0 || !hasCorrectInaugural || !hasAllMatches || !kickoffMatchesCode) {
         seedMatches();
       } else {
         window.WC_CACHE.matches = matches;
