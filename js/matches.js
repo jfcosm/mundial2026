@@ -633,7 +633,7 @@
     return (kickoffTime - currentSimulatedTime) <= oneHourInMs;
   }
 
-  // Helper to format kickoff dates
+  // Helper to format kickoff dates — always shown in Chile time (America/Santiago)
   function formatMatchTime(kickoffStr) {
     const date = new Date(kickoffStr);
     const lang = localStorage.getItem("wc_lang") || "es";
@@ -644,7 +644,8 @@
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
-      hour12: false
+      hour12: false,
+      timeZone: 'America/Santiago'
     });
   }
 
