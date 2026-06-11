@@ -1831,3 +1831,33 @@ input:checked + .switch-slider:before {
   }
 }
 
+/* ------------------------------ */
+/* APP FOOTER                     */
+/* ------------------------------ */
+.app-footer {
+  margin-top: 3rem;
+  padding: 1.25rem 2rem;
+  text-align: center;
+  border-top: 1px solid rgba(0, 240, 255, 0.1);
+  background: rgba(7, 8, 14, 0.6);
+  backdrop-filter: blur(8px);
+}
+
+.app-footer p {
+  font-family: var(--font-body);
+  font-size: 0.82rem;
+  color: var(--color-text-muted);
+  letter-spacing: 0.2px;
+}
+
+.footer-link {
+  color: var(--color-neon-cyan);
+  text-decoration: none;
+  font-weight: 600;
+  transition: text-shadow var(--transition-fast), color var(--transition-fast);
+}
+
+.footer-link:hover {
+  color: #fff;
+  text-shadow: 0 0 10px var(--color-neon-cyan);
+}
