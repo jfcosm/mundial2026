@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Predice los marcadores de la Copa Mundial FIFA 2026 y compite con amigos en este simulador del Oráculo de fútbol gamificado.">
+  <meta name="description" content="Predice los marcadores de la Copa Mundial FIFA 2026 y compite con amigos en El Oráculo Mundial, la plataforma de pronósticos de fútbol gamificada.">
   <title>El Oráculo del Mundial 2026 - Pronósticos y Tabla de Posiciones</title>
   <link rel="stylesheet" href="css/styles.css">
   <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚽</text></svg>">
@@ -49,7 +49,7 @@
         <span data-t="tabLeaderboard">🏆 Tabla</span>
       </button>
       <button class="drawer-nav-btn" id="drawer-tab-admin" data-target="screen-admin" type="button" style="display:none;">
-        <span data-t="tabSimulator">⚙️ Simulador</span>
+        <span data-t="tabSimulator">📋 Resultados</span>
       </button>
     </nav>
 
@@ -116,7 +116,7 @@
       <span data-t="tabLeaderboard">🏆 Tabla</span>
     </button>
     <button class="tab-btn" id="tab-admin" data-target="screen-admin" type="button" style="border-color: rgba(255,183,0,0.2); display:none;">
-      <span data-t="tabSimulator">⚙️ Simulador</span>
+      <span data-t="tabSimulator">📋 Resultados</span>
     </button>
   </nav>
 
@@ -289,10 +289,10 @@
 
 
     <!-- ----------------------------------------- -->
-    <!-- SCREEN 4: ADMIN SIMULATOR PANEL           -->
+    <!-- SCREEN 4: ADMIN RESULTS PANEL             -->
     <!-- ----------------------------------------- -->
     <section class="screen-section" id="screen-admin">
-      <h2 class="leaderboard-title text-glow-magenta" style="margin-bottom: 2rem;" data-t="adminTitle">Consola de Simulación Mundial 2026</h2>
+      <h2 class="leaderboard-title text-glow-magenta" style="margin-bottom: 2rem;" data-t="adminTitle">Panel de Resultados – Mundial 2026</h2>
       
       <div class="admin-panel-layout">
         
@@ -328,7 +328,7 @@
             </button>
           </div>
 
-          <!-- Simulation System Log Output -->
+          <!-- Admin System Log Output -->
           <div class="glass-panel">
             <h3 class="admin-title-panel text-glow-cyan" data-t="serverLogTitle">💻 Registro del Servidor</h3>
             <div class="log-console" id="admin-log-output">
@@ -337,15 +337,15 @@
           </div>
         </div>
 
-        <!-- Right: Real Match Score Simulators -->
+        <!-- Right: Match Results Entry -->
         <div class="glass-panel">
-          <h3 class="admin-title-panel text-glow-green" data-t="matchSimTitle">🏟️ Simulador de Resultados de Partidos</h3>
+          <h3 class="admin-title-panel text-glow-green" data-t="matchSimTitle">🏟️ Ingreso de Resultados</h3>
           <p style="font-size: 0.8rem; color: var(--color-text-muted); margin-bottom: 1.25rem;" data-t="matchSimDesc">
-            Ajusta los marcadores reales de cada partido y finalízalos para que la app calcule los puntos de los jugadores y actualice la tabla en tiempo real.
+            Ingresa los marcadores oficiales de cada partido y finalízalos para calcular los puntos de los jugadores y actualizar la tabla en tiempo real.
           </p>
           
           <div class="admin-matches-list" id="admin-matches-container">
-            <!-- Dynamic list of simulated inputs for matching scores -->
+            <!-- Dynamic list of match result inputs -->
           </div>
         </div>
 
