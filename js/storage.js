@@ -58,40 +58,110 @@
   };
 
   // Seeding functions
-  function seedMatches() {
-    console.log("Seeding default matches to Firestore...");
+  function seedMatches(existingMatches = []) {
+    console.log("Seeding/updating matches in Firestore safely...");
+    const existingMap = new Map(existingMatches.map(m => [m.id, m]));
     const batch = window.db.batch();
+    let writeCount = 0;
+
     window.WC_DATA.INITIAL_MATCHES.forEach(match => {
       const ref = window.db.collection("matches").doc(match.id);
-      // Use merge to preserve realHomeGoals/realAwayGoals if already set by admin
-      batch.set(ref, match, { merge: true });
+      const existing = existingMap.get(match.id);
+
+      if (!existing) {
+        // Entirely new match document, write it as is
+        batch.set(ref, match);
+        writeCount++;
+      } else {
+        // Document exists. Only update structural properties if they differ from code.
+        // We MUST NEVER overwrite realHomeGoals, realAwayGoals, status, or resolved knockout fields.
+        const updates = {};
+
+        // 1. Structural properties common to all matches
+        if (existing.kickoff !== match.kickoff) updates.kickoff = match.kickoff;
+        if (existing.group !== match.group) updates.group = match.group;
+        if (existing.stadium !== match.stadium) updates.stadium = match.stadium;
+
+        // 2. Team info for non-knockout matches
+        if (!match.isKnockout) {
+          if (existing.homeTeam !== match.homeTeam) updates.homeTeam = match.homeTeam;
+          if (existing.homeCode !== match.homeCode) updates.homeCode = match.homeCode;
+          if (existing.homeFlag !== match.homeFlag) updates.homeFlag = match.homeFlag;
+          if (existing.awayTeam !== match.awayTeam) updates.awayTeam = match.awayTeam;
+          if (existing.awayCode !== match.awayCode) updates.awayCode = match.awayCode;
+          if (existing.awayFlag !== match.awayFlag) updates.awayFlag = match.awayFlag;
+        } else {
+          // For knockout matches, keep placeholder properties if they changed in code
+          if (existing.placeholderHome !== match.placeholderHome) updates.placeholderHome = match.placeholderHome;
+          if (existing.placeholderAway !== match.placeholderAway) updates.placeholderAway = match.placeholderAway;
+          if (existing.isKnockout !== match.isKnockout) updates.isKnockout = match.isKnockout;
+        }
+
+        // Write updates if there are any
+        if (Object.keys(updates).length > 0) {
+          batch.update(ref, updates);
+          writeCount++;
+        }
+      }
     });
-    return batch.commit();
+
+    if (writeCount > 0) {
+      console.log(`Commiting safe seeding batch with ${writeCount} writes...`);
+      return batch.commit();
+    } else {
+      console.log("No seeding/updates required.");
+      return Promise.resolve();
+    }
   }
 
-  function seedUsers() {
-    console.log("Seeding default users and predictions to Firestore...");
-    const batch = window.db.batch();
+  function seedUsers(existingUsers = []) {
+    console.log("Seeding default users and predictions to Firestore safely...");
     
-    // Seed users
-    DEFAULT_USERS.forEach(user => {
-      const ref = window.db.collection("users").doc(user.username);
-      batch.set(ref, user);
-    });
-
-    // Seed predictions
-    Object.keys(DEFAULT_PREDICTIONS).forEach(key => {
-      const [username, matchId] = key.split("_");
-      const ref = window.db.collection("predictions").doc(key);
-      batch.set(ref, {
-        username: username,
-        matchId: matchId,
-        homeGoals: DEFAULT_PREDICTIONS[key].homeGoals,
-        awayGoals: DEFAULT_PREDICTIONS[key].awayGoals
+    // First, fetch existing predictions to know what is already in the DB
+    return window.db.collection("predictions").get().then(snapshot => {
+      const existingPredictions = {};
+      snapshot.forEach(doc => {
+        existingPredictions[doc.id] = true;
       });
-    });
+      
+      const existingUserNames = new Set(existingUsers.map(u => u.username));
+      const batch = window.db.batch();
+      let writeCount = 0;
+      
+      // Seed users only if they don't exist
+      DEFAULT_USERS.forEach(user => {
+        if (!existingUserNames.has(user.username)) {
+          const ref = window.db.collection("users").doc(user.username);
+          batch.set(ref, user);
+          writeCount++;
+        }
+      });
 
-    return batch.commit();
+      // Seed predictions only if they don't exist
+      Object.keys(DEFAULT_PREDICTIONS).forEach(key => {
+        if (!existingPredictions[key]) {
+          const [username, matchId] = key.split("_");
+          const ref = window.db.collection("predictions").doc(key);
+          batch.set(ref, {
+            username: username,
+            matchId: matchId,
+            homeGoals: DEFAULT_PREDICTIONS[key].homeGoals,
+            awayGoals: DEFAULT_PREDICTIONS[key].awayGoals
+          });
+          writeCount++;
+        }
+      });
+
+      if (writeCount > 0) {
+        console.log(`Commiting safe user seeding batch with ${writeCount} writes...`);
+        return batch.commit();
+      } else {
+        console.log("No user seeding required.");
+        return Promise.resolve();
+      }
+    }).catch(err => {
+      console.error("Error during safe user seeding: ", err);
+    });
   }
 
   // Setup Real-time Listeners
@@ -127,7 +197,13 @@
       const m1InCode = window.WC_DATA.INITIAL_MATCHES.find(m => m.id === "m1");
       const kickoffMatchesCode = m1InFirestore && m1InCode && m1InFirestore.kickoff === m1InCode.kickoff;
       if (matches.length === 0 || !hasCorrectInaugural || !hasAllMatches || !kickoffMatchesCode) {
-        seedMatches();
+        if (!snapshot.metadata.fromCache) {
+          seedMatches(matches);
+        } else {
+          console.log("Matches cache is incomplete/empty, but waiting for server snapshot before seeding...");
+          window.WC_CACHE.matches = matches;
+          onDataChangedCallback();
+        }
       } else {
         window.WC_CACHE.matches = matches;
         onDataChangedCallback();
@@ -145,7 +221,13 @@
       const hasUpdatedAdmin = adminUser && adminUser.password === "admin2026";
 
       if (users.length === 0 || !hasUpdatedAdmin) {
-        seedUsers();
+        if (!snapshot.metadata.fromCache) {
+          seedUsers(users);
+        } else {
+          console.log("Users cache is empty or outdated, waiting for server snapshot...");
+          window.WC_CACHE.users = users;
+          onDataChangedCallback();
+        }
       } else {
         window.WC_CACHE.users = users;
         onDataChangedCallback();

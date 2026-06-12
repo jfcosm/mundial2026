@@ -245,7 +245,31 @@
       cardTitleStandings: "Tabla de Posiciones",
       cardDescStandings: "Revisa en tiempo real el estado de los grupos y el avance de la fase de eliminación directa del mundial.",
       btnCardStandings: "Ver Posiciones",
-      btnCardPredictionsLock: "🔒 Registrarse para pronosticar"
+      btnCardPredictionsLock: "🔒 Registrarse para pronosticar",
+      // Welcome Modal
+      welcomePortalSubtitle: "¡Qué bueno verte de nuevo en el Oráculo!",
+      welcomeRankingTitle: "Estado del Torneo",
+      welcomeLastMatchTitle: "Último Partido Jugado",
+      welcomeRivalsTitle: "Cara a Cara",
+      welcomeNextMatchBadge: "PRÓXIMO PARTIDO",
+      btnWelcomeAction: "¡Vamos a Jugar!",
+      welcomeRankGained: "¡Felicidades! Subiste <strong>{diff} {spots}</strong> desde tu última visita. 🚀 Ahora estás en la posición <strong>#{rank}</strong> con <strong>{points} pts</strong>.",
+      welcomeRankLost: "¡No te rindas! Bajaste <strong>{diff} {spots}</strong> y ahora estás en la posición <strong>#{rank}</strong> con <strong>{points} pts</strong>. ¡Pronostica con cuidado para recuperar terreno! 🎯",
+      welcomeRankSame: "Mantienes tu posición <strong>#{rank}</strong> con <strong>{points} pts</strong>. ¡Sigue presionando para subir en la tabla! 👊",
+      welcomeRankFirstDay: "Te encuentras en la posición <strong>#{rank}</strong> con <strong>{points} pts</strong> en la tabla de posiciones. ¡A pronosticar se ha dicho! 🏆",
+      welcomeRankNoPoints: "Bienvenido al Oráculo. Aún no has acumulado puntos. ¡Pronostica los partidos para sumarte a la tabla! ⚽",
+      spots_one: "puesto",
+      spots_other: "puestos",
+      welcomeLastMatchExact: "¡Excelente! En el último partido (<strong>{home} {hGoals} - {aGoals} {away}</strong>) sumaste <strong>+{points} pts</strong>. Tu pronóstico fue {pH} - {pA} ({desc}).",
+      welcomeLastMatchIncorrect: "En el último partido (<strong>{home} {hGoals} - {aGoals} {away}</strong>) obtuviste 0 pts. ¡No te preocupes, el próximo partido es una nueva oportunidad! ⚽",
+      welcomeLastMatchNoPred: "El último partido jugado fue <strong>{home} {hGoals} - {aGoals} {away}</strong>, pero no ingresaste ningún pronóstico para este encuentro. ¡No dejes pasar más partidos! ⚠️",
+      welcomeLastMatchNoPlayed: "Aún no se han jugado partidos en el torneo. ¡Prepárate para el partido inaugural! 🏟️",
+      welcomeRivalLeader: "👑 ¡Eres el líder de la tabla! Cuidado: <strong>{username}</strong> te sigue los talones a solo <strong>{diff} pts</strong> de distancia.",
+      welcomeRivalChaser: "🎯 Tienes a <strong>{username}</strong> en la mira, a solo <strong>{diff} pts</strong> de ventaja. ¡Pronostica el próximo partido para superarlo!",
+      welcomeRivalTrivia: "<br>🔥 Tip: <strong>{username}</strong> es el más preciso con <strong>{exact} marcadores exactos</strong>.",
+      welcomeRivalNoCompetitors: "¡Compite con tus amigos para ver quién se consagra como el máximo Oráculo del Mundial!",
+      welcomeNextMatchConfirmed: "Tu pronóstico actual: <strong>{pH} - {pA}</strong>. ¡Ya estás listo para este partido! 🔒",
+      welcomeNextMatchPending: "⚠️ ¡Aún no has pronosticado este partido! Quedan {time} para guardar tu predicción. ¡Que no se te pase! ⏰"
     },
     en: {
       locale: "en-US",
@@ -421,7 +445,31 @@
       cardTitleStandings: "Group Standings",
       cardDescStandings: "Check group stage tables and bracket progression in real-time.",
       btnCardStandings: "View Standings",
-      btnCardPredictionsLock: "🔒 Register to predict"
+      btnCardPredictionsLock: "🔒 Register to predict",
+      // Welcome Modal
+      welcomePortalSubtitle: "Great to see you back at the Oracle!",
+      welcomeRankingTitle: "Tournament Standing",
+      welcomeLastMatchTitle: "Last Played Match",
+      welcomeRivalsTitle: "Head to Head",
+      welcomeNextMatchBadge: "UPCOMING MATCH",
+      btnWelcomeAction: "Let's Play!",
+      welcomeRankGained: "Congratulations! You climbed <strong>{diff} {spots}</strong> since your last visit. 🚀 You are now in position <strong>#{rank}</strong> with <strong>{points} pts</strong>.",
+      welcomeRankLost: "Don't give up! You dropped <strong>{diff} {spots}</strong> and are now in position <strong>#{rank}</strong> with <strong>{points} pts</strong>. Predict carefully to recover ground! 🎯",
+      welcomeRankSame: "You hold your position <strong>#{rank}</strong> with <strong>{points} pts</strong>. Keep pushing to climb the table! 👊",
+      welcomeRankFirstDay: "You are currently in position <strong>#{rank}</strong> with <strong>{points} pts</strong> on the leaderboard. Let's make some predictions! 🏆",
+      welcomeRankNoPoints: "Welcome to the Oracle. You haven't earned points yet. Predict the matches to join the leaderboard! ⚽",
+      spots_one: "spot",
+      spots_other: "spots",
+      welcomeLastMatchExact: "Excellent! In the last match (<strong>{home} {hGoals} - {aGoals} {away}</strong>) you earned <strong>+{points} pts</strong>. Your prediction was {pH} - {pA} ({desc}).",
+      welcomeLastMatchIncorrect: "In the last match (<strong>{home} {hGoals} - {aGoals} {away}</strong>) you scored 0 pts. Don't worry, the next match is a new chance! ⚽",
+      welcomeLastMatchNoPred: "The last match played was <strong>{home} {hGoals} - {aGoals} {away}</strong>, but you did not submit a prediction. Don't miss out on matches! ⚠️",
+      welcomeLastMatchNoPlayed: "No matches have been played in the tournament yet. Get ready for the opening match! 🏟️",
+      welcomeRivalLeader: "👑 You are the leader of the table! Watch out: <strong>{username}</strong> is chasing you just <strong>{diff} pts</strong> behind.",
+      welcomeRivalChaser: "🎯 You have <strong>{username}</strong> in your sights, just <strong>{diff} pts</strong> ahead. Predict the next match to pass them!",
+      welcomeRivalTrivia: "<br>🔥 Tip: <strong>{username}</strong> is the most precise with <strong>{exact} exact scores</strong>.",
+      welcomeRivalNoCompetitors: "Compete with your friends to see who becomes the ultimate World Cup Oracle!",
+      welcomeNextMatchConfirmed: "Your current prediction: <strong>{pH} - {pA}</strong>. You are ready for this match! 🔒",
+      welcomeNextMatchPending: "⚠️ You haven't predicted this match yet! <strong>{time}</strong> left to save your prediction. Don't miss it! ⏰"
     }
   };
 
@@ -675,6 +723,191 @@
     if (points >= 31) return { name: "Goleador", class: "striker" };
     if (points >= 16) return { name: "Estratega", class: "tactician" };
     return { name: "Principiante", class: "rookie" };
+  }
+
+  function triggerWelcomeOverlay(user) {
+    if (!user) return;
+
+    const overlay = document.getElementById("welcome-modal-overlay");
+    const userAvatar = document.getElementById("welcome-user-avatar");
+    const userNick = document.getElementById("welcome-user-nick");
+    const rankingText = document.getElementById("welcome-ranking-text");
+    const lastMatchText = document.getElementById("welcome-last-match-text");
+    const rivalText = document.getElementById("welcome-rival-text");
+    
+    const nextHomeFlag = document.getElementById("welcome-next-home-flag");
+    const nextHomeName = document.getElementById("welcome-next-home-name");
+    const nextAwayFlag = document.getElementById("welcome-next-away-flag");
+    const nextAwayName = document.getElementById("welcome-next-away-name");
+    const nextMatchAlert = document.getElementById("welcome-next-match-alert");
+
+    if (!overlay) return;
+
+    userAvatar.innerText = user.avatar || "⚽";
+    userNick.innerText = user.username;
+
+    // 1. Leaderboard & Ranking
+    const leaderboard = window.WC_STORAGE.calculateLeaderboard();
+    const userIndex = leaderboard.findIndex(u => u.username === user.username);
+    const currentRankPosition = userIndex !== -1 ? userIndex + 1 : null;
+    const userStats = leaderboard[userIndex] || { points: 0 };
+
+    const rankStorageKey = `wc_last_rank_${user.username}`;
+    const prevRankStr = localStorage.getItem(rankStorageKey);
+    let rankingMsg = "";
+
+    if (currentRankPosition !== null) {
+      if (prevRankStr) {
+        const prevRank = parseInt(prevRankStr, 10);
+        if (currentRankPosition < prevRank) {
+          const diff = prevRank - currentRankPosition;
+          const spotsLabel = t(diff === 1 ? "spots_one" : "spots_other");
+          rankingMsg = t("welcomeRankGained", { diff, spots: spotsLabel, rank: currentRankPosition, points: userStats.points });
+        } else if (currentRankPosition > prevRank) {
+          const diff = currentRankPosition - prevRank;
+          const spotsLabel = t(diff === 1 ? "spots_one" : "spots_other");
+          rankingMsg = t("welcomeRankLost", { diff, spots: spotsLabel, rank: currentRankPosition, points: userStats.points });
+        } else {
+          rankingMsg = t("welcomeRankSame", { rank: currentRankPosition, points: userStats.points });
+        }
+      } else {
+        rankingMsg = t("welcomeRankFirstDay", { rank: currentRankPosition, points: userStats.points });
+      }
+      localStorage.setItem(rankStorageKey, currentRankPosition.toString());
+    } else {
+      rankingMsg = t("welcomeRankNoPoints");
+    }
+    rankingText.innerHTML = rankingMsg;
+
+    // 2. Last Finished Match Results
+    const matches = window.WC_STORAGE.getMatches();
+    const finishedMatches = [...matches]
+      .filter(m => m.status === "finished")
+      .sort((a, b) => new Date(b.kickoff).getTime() - new Date(a.kickoff).getTime());
+    
+    let lastMatchMsg = "";
+    if (finishedMatches.length > 0) {
+      const lastMatch = finishedMatches[0];
+      const predictions = window.WC_STORAGE.getPredictions();
+      const predKey = `${user.username}_${lastMatch.id}`;
+      const pred = predictions[predKey];
+
+      if (pred && pred.homeGoals !== null && pred.homeGoals !== undefined) {
+        const result = window.WC_STORAGE.calculateMatchPoints(pred, lastMatch);
+        if (result.points > 0) {
+          lastMatchMsg = t("welcomeLastMatchExact", {
+            home: lastMatch.homeTeam,
+            hGoals: lastMatch.realHomeGoals,
+            aGoals: lastMatch.realAwayGoals,
+            away: lastMatch.awayTeam,
+            points: result.points,
+            pH: pred.homeGoals,
+            pA: pred.awayGoals,
+            desc: result.description
+          });
+        } else {
+          lastMatchMsg = t("welcomeLastMatchIncorrect", {
+            home: lastMatch.homeTeam,
+            hGoals: lastMatch.realHomeGoals,
+            aGoals: lastMatch.realAwayGoals,
+            away: lastMatch.awayTeam
+          });
+        }
+      } else {
+        lastMatchMsg = t("welcomeLastMatchNoPred", {
+          home: lastMatch.homeTeam,
+          hGoals: lastMatch.realHomeGoals,
+          aGoals: lastMatch.realAwayGoals,
+          away: lastMatch.awayTeam
+        });
+      }
+    } else {
+      lastMatchMsg = t("welcomeLastMatchNoPlayed");
+    }
+    lastMatchText.innerHTML = lastMatchMsg;
+
+    // 3. Rival Check & Trivia
+    let rivalMsg = "";
+    if (leaderboard.length > 1 && currentRankPosition !== null) {
+      if (currentRankPosition === 1) {
+        const runnerUp = leaderboard[1];
+        const diff = userStats.points - runnerUp.points;
+        rivalMsg = t("welcomeRivalLeader", { username: runnerUp.username, diff });
+      } else {
+        const personAhead = leaderboard[userIndex - 1];
+        const diffAhead = personAhead.points - userStats.points;
+        rivalMsg = t("welcomeRivalChaser", { username: personAhead.username, diff: diffAhead });
+      }
+      
+      const sortedByExact = [...leaderboard].sort((a, b) => b.exact - a.exact);
+      const topExact = sortedByExact[0];
+      if (topExact && topExact.exact > 0 && topExact.username !== user.username) {
+        rivalMsg += t("welcomeRivalTrivia", { username: topExact.username, exact: topExact.exact });
+      }
+    } else {
+      rivalMsg = t("welcomeRivalNoCompetitors");
+    }
+    rivalText.innerHTML = rivalMsg;
+
+    // 4. Next Match Highlight
+    const simTime = window.WC_STORAGE.getSimulatedTime();
+    const nextMatch = matches.find(m => m.status !== "finished" && new Date(m.kickoff).getTime() > simTime);
+
+    if (nextMatch) {
+      const nextMatchCard = document.getElementById("welcome-card-next-match");
+      if (nextMatchCard) nextMatchCard.style.display = "flex";
+
+      nextHomeFlag.innerText = nextMatch.homeFlag;
+      nextHomeName.innerText = nextMatch.homeTeam;
+      nextAwayFlag.innerText = nextMatch.awayFlag;
+      nextAwayName.innerText = nextMatch.awayTeam;
+
+      const predictions = window.WC_STORAGE.getPredictions();
+      const predKey = `${user.username}_${nextMatch.id}`;
+      const pred = predictions[predKey];
+
+      if (pred && pred.homeGoals !== null && pred.homeGoals !== undefined) {
+        nextMatchAlert.className = "next-match-time-alert confirmed";
+        nextMatchAlert.innerHTML = t("welcomeNextMatchConfirmed", { pH: pred.homeGoals, pA: pred.awayGoals });
+      } else {
+        const kickoffTime = new Date(nextMatch.kickoff).getTime();
+        const diffMs = kickoffTime - simTime;
+        const diffHrs = Math.floor(diffMs / (3600 * 1000));
+        const diffMins = Math.floor((diffMs % (3600 * 1000)) / (60 * 1000));
+        
+        nextMatchAlert.className = "next-match-time-alert pending";
+        
+        let timeStr = "";
+        const lang = localStorage.getItem("wc_lang") || "es";
+        if (diffHrs > 0) {
+          timeStr = lang === "en" ? `${diffHrs}h ${diffMins}m` : `${diffHrs}h y ${diffMins}m`;
+        } else {
+          timeStr = lang === "en" ? `${diffMins}m` : `${diffMins}m`;
+        }
+        nextMatchAlert.innerHTML = t("welcomeNextMatchPending", { time: `<strong>${timeStr}</strong>` });
+      }
+    } else {
+      const nextMatchCard = document.getElementById("welcome-card-next-match");
+      if (nextMatchCard) nextMatchCard.style.display = "none";
+    }
+
+    // Open overlay
+    overlay.style.display = "flex";
+    setTimeout(() => {
+      overlay.classList.add("open");
+    }, 10);
+    overlay.setAttribute("aria-hidden", "false");
+
+    // Close button
+    const closeBtn = document.getElementById("btn-close-welcome");
+    closeBtn.onclick = () => {
+      window.WC_SOUND.playClick();
+      overlay.classList.remove("open");
+      setTimeout(() => {
+        overlay.style.display = "none";
+      }, 300);
+      overlay.setAttribute("aria-hidden", "true");
+    };
   }
 
   // INITIALIZATION
@@ -2064,6 +2297,7 @@
             addLog(t("logUserEntered", { username: currentUser.username }));
             
             renderAll();
+            triggerWelcomeOverlay(currentUser);
           } else {
             // User authenticated in Auth, but doc missing in Firestore. Let's create it!
             const defaultUser = window.WC_STORAGE.DEFAULT_USERS.find(u => u.username.toLowerCase() === name.toLowerCase());
@@ -2085,6 +2319,7 @@
               showToast(t("toastProfileRestored", { username: currentUser.username }));
               addLog(t("logUserEntered", { username: currentUser.username }));
               renderAll();
+              triggerWelcomeOverlay(currentUser);
             });
           }
         })
@@ -2106,6 +2341,7 @@
                 showToast(t("toastMockUserInit", { username: currentUser.username }));
                 addLog(t("logUserEntered", { username: currentUser.username }));
                 renderAll();
+                triggerWelcomeOverlay(currentUser);
               })
               .catch(signUpErr => {
                 window.WC_SOUND.playError();
@@ -2181,6 +2417,7 @@
           initSignupAvatars();
 
           renderAll();
+          triggerWelcomeOverlay(currentUser);
         })
         .catch(err => {
           window.WC_SOUND.playError();

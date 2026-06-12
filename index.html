@@ -556,6 +556,69 @@
     </div>
   </aside>
 
+  <!-- Welcome Portal Modal -->
+  <div id="welcome-modal-overlay" class="welcome-modal-overlay" aria-hidden="true" style="display: none;">
+    <div class="welcome-modal-card glass-panel">
+      <div class="welcome-modal-header">
+        <span class="welcome-modal-avatar" id="welcome-user-avatar">⚽</span>
+        <h2 class="welcome-modal-title">¡Hola, <span id="welcome-user-nick">-</span>! 👋</h2>
+        <p class="welcome-modal-subtitle" data-t="welcomePortalSubtitle">¡Qué bueno verte de nuevo en el Oráculo!</p>
+      </div>
+      
+      <div class="welcome-modal-body">
+        
+        <!-- Leaderboard / Rank Card -->
+        <div class="welcome-stat-card ranking-card" id="welcome-card-ranking">
+          <div class="welcome-stat-icon">📈</div>
+          <div class="welcome-stat-content">
+            <h4 class="welcome-stat-title" data-t="welcomeRankingTitle">Estado del Torneo</h4>
+            <p class="welcome-stat-desc" id="welcome-ranking-text">Cargando clasificación...</p>
+          </div>
+        </div>
+
+        <!-- Last Match Results Card -->
+        <div class="welcome-stat-card last-match-card" id="welcome-card-last-match">
+          <div class="welcome-stat-icon">⚽</div>
+          <div class="welcome-stat-content">
+            <h4 class="welcome-stat-title" data-t="welcomeLastMatchTitle">Último Partido Jugado</h4>
+            <p class="welcome-stat-desc" id="welcome-last-match-text">No hay partidos finalizados aún.</p>
+          </div>
+        </div>
+
+        <!-- Rival Check Card -->
+        <div class="welcome-stat-card rival-card" id="welcome-card-rival">
+          <div class="welcome-stat-icon">🔥</div>
+          <div class="welcome-stat-content">
+            <h4 class="welcome-stat-title" data-t="welcomeRivalsTitle">Cara a Cara</h4>
+            <p class="welcome-stat-desc" id="welcome-rival-text">Calculando rivalidades...</p>
+          </div>
+        </div>
+
+        <!-- Next Match Highlight Card -->
+        <div class="welcome-stat-card next-match-card" id="welcome-card-next-match">
+          <div class="welcome-stat-badge" data-t="welcomeNextMatchBadge">PRÓXIMO PARTIDO</div>
+          <div class="next-match-teams">
+            <span id="welcome-next-home-flag">🇲🇽</span>
+            <span class="next-match-team-name" id="welcome-next-home-name">México</span>
+            <span class="next-match-vs">VS</span>
+            <span id="welcome-next-away-flag">🇿🇦</span>
+            <span class="next-match-team-name" id="welcome-next-away-name">Sudáfrica</span>
+          </div>
+          <div class="next-match-time-alert" id="welcome-next-match-alert">
+            <!-- Dynamically populated countdown or prediction confirmation -->
+          </div>
+        </div>
+
+      </div>
+
+      <div class="welcome-modal-footer">
+        <button id="btn-close-welcome" class="btn-arcade-primary" type="button">
+          <span data-t="btnWelcomeAction">¡Vamos a Jugar!</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Script Modules -->
   <script src="js/sound.js"></script>
   <script src="js/firebase-config.js"></script>
