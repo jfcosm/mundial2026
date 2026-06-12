@@ -30,6 +30,17 @@
       <button id="btn-close-drawer" class="btn-close-drawer" type="button" aria-label="Cerrar menú">✕</button>
     </div>
 
+    <!-- Visitor Greeting Card -->
+    <div id="drawer-visitor-card" class="drawer-user-card" style="display: none; border: 1px dashed var(--color-neon-blue); background: rgba(0, 242, 254, 0.05); flex-direction: row; align-items: center; gap: 1rem; margin: 1.25rem 1.25rem 0.75rem; padding: 1rem; border-radius: 12px;">
+      <div class="drawer-user-avatar" style="border-color: var(--color-neon-cyan); box-shadow: 0 0 12px var(--color-neon-cyan);">🏆</div>
+      <div>
+        <div class="drawer-user-name" style="color: var(--color-neon-cyan); font-size: 0.9rem;" data-t="visitorHeroBadge">CONCURSO MUNDIAL</div>
+        <button class="btn-arcade-primary" id="btn-drawer-signup" type="button" style="padding: 0.25rem 0.6rem; font-size: 0.7rem; margin-top: 0.3rem; width: auto; box-shadow: 0 0 8px rgba(0, 240, 255, 0.25);">
+          <span data-t="btnHeroSignup">Registrarse Gratis</span>
+        </button>
+      </div>
+    </div>
+
     <!-- User Info Card (only when logged in) -->
     <div id="drawer-user-card" class="drawer-user-card" style="display:none;">
       <div class="drawer-user-avatar" id="drawer-avatar">🐐</div>
@@ -42,6 +53,9 @@
 
     <!-- Navigation Links -->
     <nav id="drawer-nav" class="drawer-nav" style="display:none;">
+      <button class="drawer-nav-btn" id="drawer-tab-home" data-target="screen-visitor-landing" type="button" style="display: none;">
+        <span data-t="tabHome">🏠 Inicio</span>
+      </button>
       <button class="drawer-nav-btn active" id="drawer-tab-dashboard" data-target="screen-dashboard" type="button">
         <span data-t="tabMatches">🏟️ Partidos</span>
       </button>
@@ -53,6 +67,9 @@
       </button>
       <button class="drawer-nav-btn" id="drawer-tab-admin" data-target="screen-admin" type="button" style="display:none;">
         <span data-t="tabSimulator">📋 Resultados</span>
+      </button>
+      <button class="drawer-nav-btn" id="drawer-tab-auth" data-target="screen-auth" type="button" style="display: none; border-color: var(--color-neon-cyan); color: var(--color-neon-cyan);">
+        <span data-t="tabPlayNow">🔐 Iniciar / Jugar</span>
       </button>
     </nav>
 
@@ -92,6 +109,11 @@
       <!-- Hidden HUD (kept for JS compatibility, not shown) -->
       <span id="current-simulated-time-hud" style="display:none;"></span>
 
+      <!-- Play Button for visitors (header) -->
+      <button class="btn-arcade-primary" id="btn-header-play" type="button" style="display: none; padding: 0.4rem 0.8rem; font-size: 0.8rem; width: auto; box-shadow: 0 0 10px rgba(0, 240, 255, 0.25);">
+        <span data-t="btnHeaderPlay">Jugar / Iniciar</span>
+      </button>
+
       <!-- Active User Profile (slim, desktop only) -->
       <div class="header-user-profile" id="user-header-profile" style="display: none;">
         <div class="user-avatar-badge" id="user-header-avatar" aria-hidden="true">🐐</div>
@@ -112,6 +134,9 @@
 
   <!-- Tab navigation (desktop, hidden on mobile — hamburger handles mobile) -->
   <nav class="tab-navigation" id="main-navigation" style="display: none;">
+    <button class="tab-btn" id="tab-home" data-target="screen-visitor-landing" type="button" style="display: none;">
+      <span data-t="tabHome">🏠 Inicio</span>
+    </button>
     <button class="tab-btn active" id="tab-dashboard" data-target="screen-dashboard" type="button">
       <span data-t="tabMatches">🏟️ Partidos</span>
     </button>
@@ -124,14 +149,70 @@
     <button class="tab-btn" id="tab-admin" data-target="screen-admin" type="button" style="border-color: rgba(255,183,0,0.2); display:none;">
       <span data-t="tabSimulator">📋 Resultados</span>
     </button>
+    <button class="tab-btn" id="tab-auth" data-target="screen-auth" type="button" style="display: none; border-color: var(--color-neon-cyan); color: var(--color-neon-cyan);">
+      <span data-t="tabPlayNow">🔐 Iniciar / Jugar</span>
+    </button>
   </nav>
 
   <main class="screen-container">
 
     <!-- ----------------------------------------- -->
+    <!-- SCREEN: VISITOR LANDING                   -->
+    <!-- ----------------------------------------- -->
+    <section class="screen-section active" id="screen-visitor-landing">
+      <div class="visitor-hero">
+        <span class="visitor-hero-badge" data-t="visitorHeroBadge">🏆 COPA MUNDIAL 2026</span>
+        <h2 class="visitor-hero-title" data-t="visitorHeroTitle">¿Tienes lo necesario para ser el nuevo Oráculo?</h2>
+        <p class="visitor-hero-desc" data-t="visitorHeroDesc">
+          Predice los marcadores reales de los partidos, acumula puntos y compite contra participantes de todo el mundo en el simulador definitivo del mundial.
+        </p>
+        <div class="visitor-hero-actions">
+          <button class="btn-arcade-primary" id="btn-hero-signup" type="button">
+            <span data-t="btnHeroSignup">Registrarse Gratis</span>
+          </button>
+          <button class="btn-arcade-primary btn-visitor-login" id="btn-hero-login" type="button">
+            <span data-t="btnHeroLogin">Iniciar Sesión</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="visitor-menu-grid">
+        <!-- Card 1: Leaderboard -->
+        <div class="visitor-menu-card">
+          <div class="card-icon" aria-hidden="true">🏆</div>
+          <h3 data-t="cardTitleLeaderboard">Salón de la Fama</h3>
+          <p data-t="cardDescLeaderboard">Consulta el listado en vivo de los competidores y descubre quién lidera la carrera para convertirse en el gran Oráculo.</p>
+          <button class="btn-visitor-card" id="btn-card-leaderboard" type="button">
+            <span data-t="btnCardLeaderboard">Ver Clasificación</span>
+          </button>
+        </div>
+
+        <!-- Card 2: Calendar -->
+        <div class="visitor-menu-card">
+          <div class="card-icon" aria-hidden="true">📅</div>
+          <h3 data-t="cardTitleMatches">Calendario de Partidos</h3>
+          <p data-t="cardDescMatches">Explora el fixture oficial, estadios del mundial y los horarios de todos los partidos del torneo.</p>
+          <button class="btn-visitor-card" id="btn-card-matches" type="button">
+            <span data-t="btnCardMatches">Ver Partidos</span>
+          </button>
+        </div>
+
+        <!-- Card 3: Standings -->
+        <div class="visitor-menu-card">
+          <div class="card-icon" aria-hidden="true">📊</div>
+          <h3 data-t="cardTitleStandings">Tabla de Posiciones</h3>
+          <p data-t="cardDescStandings">Revisa en tiempo real el estado de los grupos y el avance de la fase de eliminación directa del mundial.</p>
+          <button class="btn-visitor-card" id="btn-card-standings" type="button">
+            <span data-t="btnCardStandings">Ver Posiciones</span>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ----------------------------------------- -->
     <!-- SCREEN 1: LOGIN / REGISTER (UNAUTH)      -->
     <!-- ----------------------------------------- -->
-    <section class="screen-section active" id="screen-auth">
+    <section class="screen-section" id="screen-auth">
       <div class="auth-layout">
         <div class="auth-box glass-panel">
           <h2 class="auth-title text-glow-cyan" data-t="authTitle">Inicio de Juego</h2>

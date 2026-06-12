@@ -58,6 +58,17 @@
   const AVATARS = ['🐐', '🦁', '⚡', '👑', '🤖', '🦊', '🐙', '🦅', '🦄', '⚽'];
   let selectedSignupAvatar = AVATARS[0];
 
+  // Helper to switch to Auth tab and show Login/Signup mode
+  function showAuthTab(mode) {
+    activeTab = "screen-auth";
+    renderAll();
+    if (mode === "signup") {
+      authTabSignup.click();
+    } else {
+      authTabLogin.click();
+    }
+  }
+
   // TRANSLATION SYSTEM
   const TRANSLATIONS = {
     es: {
@@ -215,7 +226,26 @@
       thUserCreated: "Fecha Registro",
       thUserLastLogin: "Última Conexión",
       thUserBrowser: "Navegador/OS de Creación",
-      thUserScore: "Puntaje"
+      thUserScore: "Puntaje",
+      // Visitor elements
+      tabHome: "🏠 Inicio",
+      tabPlayNow: "🎮 Jugar / Iniciar",
+      btnHeaderPlay: "🎮 Jugar",
+      visitorHeroBadge: "🏆 COPA MUNDIAL 2026",
+      visitorHeroTitle: "¿Tienes lo necesario para ser el nuevo Oráculo?",
+      visitorHeroDesc: "Predice los marcadores reales de los partidos, acumula puntos y compite contra participantes de todo el mundo en el simulador definitivo del mundial.",
+      btnHeroSignup: "Registrarse Gratis",
+      btnHeroLogin: "Iniciar Sesión",
+      cardTitleLeaderboard: "Salón de la Fama",
+      cardDescLeaderboard: "Consulta el listado en vivo de los competidores y descubre quién lidera la carrera para convertirse en el gran Oráculo.",
+      btnCardLeaderboard: "Ver Clasificación",
+      cardTitleMatches: "Calendario de Partidos",
+      cardDescMatches: "Explora el fixture oficial, estadios del mundial y los horarios de todos los partidos del torneo.",
+      btnCardMatches: "Ver Partidos",
+      cardTitleStandings: "Tabla de Posiciones",
+      cardDescStandings: "Revisa en tiempo real el estado de los grupos y el avance de la fase de eliminación directa del mundial.",
+      btnCardStandings: "Ver Posiciones",
+      btnCardPredictionsLock: "🔒 Registrarse para pronosticar"
     },
     en: {
       locale: "en-US",
@@ -372,7 +402,26 @@
       thUserCreated: "Registration Date",
       thUserLastLogin: "Last Connection",
       thUserBrowser: "Browser of Creation",
-      thUserScore: "Score"
+      thUserScore: "Score",
+      // Visitor elements
+      tabHome: "🏠 Home",
+      tabPlayNow: "🎮 Play / Login",
+      btnHeaderPlay: "🎮 Play",
+      visitorHeroBadge: "🏆 WORLD CUP 2026",
+      visitorHeroTitle: "Do you have what it takes to be the next Oracle?",
+      visitorHeroDesc: "Predict real-life match scores, earn points, and compete with participants worldwide in the ultimate tournament oracle.",
+      btnHeroSignup: "Sign Up Free",
+      btnHeroLogin: "Log In",
+      cardTitleLeaderboard: "Hall of Fame",
+      cardDescLeaderboard: "View the live leaderboard and track who is leading the race to be crowned the ultimate Oracle.",
+      btnCardLeaderboard: "View Standings",
+      cardTitleMatches: "Matches Calendar",
+      cardDescMatches: "Explore the official fixture schedule, stadiums, and kickoff times for all matches.",
+      btnCardMatches: "View Matches",
+      cardTitleStandings: "Group Standings",
+      cardDescStandings: "Check group stage tables and bracket progression in real-time.",
+      btnCardStandings: "View Standings",
+      btnCardPredictionsLock: "🔒 Register to predict"
     }
   };
 
@@ -640,6 +689,9 @@
     const storedUser = sessionStorage.getItem("wc_active_user");
     if (storedUser) {
       currentUser = JSON.parse(storedUser);
+      activeTab = "screen-dashboard";
+    } else {
+      activeTab = "screen-visitor-landing";
     }
 
     setupEventListeners();
@@ -707,12 +759,30 @@
       }
     }
 
+    // Cache elements to avoid multiple DOM selections
+    const tabHomeBtn = document.getElementById("tab-home");
+    const tabAuthBtn = document.getElementById("tab-auth");
+    const drawerTabHomeBtn = document.getElementById("drawer-tab-home");
+    const drawerTabAuthBtn = document.getElementById("drawer-tab-auth");
+    const drawerVisitorCard = document.getElementById("drawer-visitor-card");
+    const btnHeaderPlay = document.getElementById("btn-header-play");
+    const tabAdminBtn = document.getElementById("tab-admin");
+    const drawerAdminBtn = document.getElementById("drawer-tab-admin");
+
     if (currentUser) {
       // Logged In layout
       screenAuth.classList.remove("active");
       mainNavigation.style.display = "flex";
       userHeaderProfile.style.display = "flex";
       
+      // Hide visitor components
+      if (tabHomeBtn) tabHomeBtn.style.display = "none";
+      if (tabAuthBtn) tabAuthBtn.style.display = "none";
+      if (drawerTabHomeBtn) drawerTabHomeBtn.style.display = "none";
+      if (drawerTabAuthBtn) drawerTabAuthBtn.style.display = "none";
+      if (drawerVisitorCard) drawerVisitorCard.style.display = "none";
+      if (btnHeaderPlay) btnHeaderPlay.style.display = "none";
+
       // Update User HUD
       const leaderboard = window.WC_STORAGE.calculateLeaderboard();
       const userStats = leaderboard.find(u => u.username === currentUser.username) || { points: 0 };
@@ -738,19 +808,12 @@
       drawerNav.style.display = "flex";
       drawerLogoutWrap.style.display = "block";
 
-      // Sync drawer nav active state
-      document.querySelectorAll(".drawer-nav-btn[data-target]").forEach(btn => {
-        btn.classList.toggle("active", btn.getAttribute("data-target") === activeTab);
-      });
-
       // Show admin tab ONLY for admins
-      const tabAdminBtn = document.getElementById("tab-admin");
-      const drawerAdminBtn = document.getElementById("drawer-tab-admin");
       if (currentUser.isAdmin) {
-        tabAdminBtn.style.display = "block";
+        if (tabAdminBtn) tabAdminBtn.style.display = "block";
         if (drawerAdminBtn) drawerAdminBtn.style.display = "flex";
       } else {
-        tabAdminBtn.style.display = "none";
+        if (tabAdminBtn) tabAdminBtn.style.display = "none";
         if (drawerAdminBtn) drawerAdminBtn.style.display = "none";
         // If current tab is admin and they are not admin, fallback to dashboard
         if (activeTab === "screen-admin") activeTab = "screen-dashboard";
@@ -762,11 +825,12 @@
 
       // Active tab styling
       document.querySelectorAll(".tab-btn").forEach(btn => {
-        if (btn.getAttribute("data-target") === activeTab) {
-          btn.classList.add("active");
-        } else {
-          btn.classList.remove("active");
-        }
+        btn.classList.toggle("active", btn.getAttribute("data-target") === activeTab);
+      });
+
+      // Sync drawer nav active state
+      document.querySelectorAll(".drawer-nav-btn[data-target]").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-target") === activeTab);
       });
 
       // Render tab specific components
@@ -778,18 +842,48 @@
       if (activeTab === "screen-leaderboard") renderLeaderboard();
       if (activeTab === "screen-admin") renderAdmin();
     } else {
-      // Unauthenticated Layout
-      screenAuth.classList.add("active");
-      mainNavigation.style.display = "none";
+      // Unauthenticated / Visitor Layout
+      mainNavigation.style.display = "flex";
       userHeaderProfile.style.display = "none";
       drawerUserCard.style.display = "none";
-      drawerNav.style.display = "none";
       drawerLogoutWrap.style.display = "none";
+      drawerNav.style.display = "flex";
 
-      document.querySelectorAll(".screen-section").forEach(s => {
-        if (s.id !== "screen-auth") s.classList.remove("active");
+      // Show visitor components
+      if (tabHomeBtn) tabHomeBtn.style.display = "block";
+      if (tabAuthBtn) tabAuthBtn.style.display = "block";
+      if (drawerTabHomeBtn) drawerTabHomeBtn.style.display = "flex";
+      if (drawerTabAuthBtn) drawerTabAuthBtn.style.display = "flex";
+      if (drawerVisitorCard) drawerVisitorCard.style.display = "flex";
+      if (btnHeaderPlay) btnHeaderPlay.style.display = "block";
+
+      // Hide admin tabs for visitors
+      if (tabAdminBtn) tabAdminBtn.style.display = "none";
+      if (drawerAdminBtn) drawerAdminBtn.style.display = "none";
+      if (activeTab === "screen-admin") activeTab = "screen-visitor-landing";
+
+      // Hide all screens, show active
+      document.querySelectorAll(".screen-section").forEach(s => s.classList.remove("active"));
+      document.getElementById(activeTab).classList.add("active");
+
+      // Active tab styling
+      document.querySelectorAll(".tab-btn").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-target") === activeTab);
       });
-      renderAuth();
+
+      // Sync drawer nav active state
+      document.querySelectorAll(".drawer-nav-btn[data-target]").forEach(btn => {
+        btn.classList.toggle("active", btn.getAttribute("data-target") === activeTab);
+      });
+
+      // Render tab specific components
+      if (activeTab === "screen-dashboard") {
+        renderDashboard();
+        renderMiniLeaderboard();
+      }
+      if (activeTab === "screen-standings") renderStandings();
+      if (activeTab === "screen-leaderboard") renderLeaderboard();
+      if (activeTab === "screen-auth") renderAuth();
     }
   }
 
@@ -881,7 +975,7 @@
 
     topUsers.forEach((user, index) => {
       const row = document.createElement("div");
-      row.className = `mini-leaderboard-row ${user.username === currentUser.username ? 'active' : ''}`;
+      row.className = `mini-leaderboard-row ${currentUser && user.username === currentUser.username ? 'active' : ''}`;
 
       row.innerHTML = `
         <div class="mini-user-info">
@@ -925,8 +1019,8 @@
       const isResolved = match.resolved === true;
       const isLocked = window.WC_DATA.isMatchLocked(match, simTime) || (isKnockout && !isResolved);
       
-      const predKey = `${currentUser.username}_${match.id}`;
-      const userPred = predictions[predKey] || { homeGoals: "", awayGoals: "" };
+      const predKey = currentUser ? `${currentUser.username}_${match.id}` : null;
+      const userPred = predKey ? (predictions[predKey] || { homeGoals: "", awayGoals: "" }) : { homeGoals: "", awayGoals: "" };
       
       const card = document.createElement("div");
       card.className = `glass-panel match-card ${isKnockout && !isResolved ? 'match-pending' : ''}`;
@@ -950,7 +1044,7 @@
 
       // Prediction and scoring math displays
       let pointsBadgeHtml = "";
-      if (isMatchFinished) {
+      if (isMatchFinished && currentUser) {
         const result = window.WC_STORAGE.calculateMatchPoints(userPred, match);
         let badgeClass = "zero";
         const scoreText = `${result.points} ${t("ptsCaps")}`;
@@ -969,7 +1063,7 @@
       }
 
       // Home and Away Score Value placeholders
-      const inputDisabledAttr = (isLocked || isMatchFinished) ? "disabled" : "";
+      const inputDisabledAttr = (!currentUser || isLocked || isMatchFinished) ? "disabled" : "";
       const homeTranslated = translateTeamName(match.homeTeam, lang);
       const awayTranslated = translateTeamName(match.awayTeam, lang);
 
@@ -1032,11 +1126,17 @@
             </div>
             <div>
               ${pointsBadgeHtml}
-              ${(!isLocked && !isMatchFinished) ? `
-                <button class="btn-save-prediction" id="btn-save-${match.id}" type="button">
-                  ${t("btnSave")}
-                </button>
-              ` : ''}
+              ${(!isLocked && !isMatchFinished) ? (
+                currentUser ? `
+                  <button class="btn-save-prediction" id="btn-save-${match.id}" type="button">
+                    ${t("btnSave")}
+                  </button>
+                ` : `
+                  <button class="visitor-lock-banner" id="btn-lock-cta-${match.id}" type="button">
+                    ${t("btnCardPredictionsLock")}
+                  </button>
+                `
+              ) : ''}
             </div>
           </div>
         </div>
@@ -1081,6 +1181,15 @@
               showToast(t("toastSaveError"), "error");
               console.error("Firebase save error: ", err);
             });
+        });
+      }
+
+      // Lock CTA listener for visitor cards
+      const lockCtaBtn = card.querySelector(`#btn-lock-cta-${match.id}`);
+      if (lockCtaBtn) {
+        lockCtaBtn.addEventListener("click", () => {
+          window.WC_SOUND.playClick();
+          showAuthTab("signup");
         });
       }
 
@@ -1377,7 +1486,7 @@
 
     leaderboard.forEach((user, index) => {
       const row = document.createElement("tr");
-      if (user.username === currentUser.username) {
+      if (currentUser && user.username === currentUser.username) {
         row.className = "current-user-row";
       }
 
@@ -1759,6 +1868,67 @@
       // Test beep to give feedback
       window.WC_SOUND.playClick();
     });
+
+    // Visitor Navigation Actions
+    const headerPlayBtn = document.getElementById("btn-header-play");
+    if (headerPlayBtn) {
+      headerPlayBtn.addEventListener("click", () => {
+        window.WC_SOUND.playClick();
+        showAuthTab("login");
+      });
+    }
+
+    const drawerSignupBtn = document.getElementById("btn-drawer-signup");
+    if (drawerSignupBtn) {
+      drawerSignupBtn.addEventListener("click", () => {
+        window.WC_SOUND.playClick();
+        closeDrawer();
+        showAuthTab("signup");
+      });
+    }
+
+    const heroSignupBtn = document.getElementById("btn-hero-signup");
+    if (heroSignupBtn) {
+      heroSignupBtn.addEventListener("click", () => {
+        window.WC_SOUND.playClick();
+        showAuthTab("signup");
+      });
+    }
+
+    const heroLoginBtn = document.getElementById("btn-hero-login");
+    if (heroLoginBtn) {
+      heroLoginBtn.addEventListener("click", () => {
+        window.WC_SOUND.playClick();
+        showAuthTab("login");
+      });
+    }
+
+    const cardLeaderboardBtn = document.getElementById("btn-card-leaderboard");
+    if (cardLeaderboardBtn) {
+      cardLeaderboardBtn.addEventListener("click", () => {
+        window.WC_SOUND.playClick();
+        activeTab = "screen-leaderboard";
+        renderAll();
+      });
+    }
+
+    const cardMatchesBtn = document.getElementById("btn-card-matches");
+    if (cardMatchesBtn) {
+      cardMatchesBtn.addEventListener("click", () => {
+        window.WC_SOUND.playClick();
+        activeTab = "screen-dashboard";
+        renderAll();
+      });
+    }
+
+    const cardStandingsBtn = document.getElementById("btn-card-standings");
+    if (cardStandingsBtn) {
+      cardStandingsBtn.addEventListener("click", () => {
+        window.WC_SOUND.playClick();
+        activeTab = "screen-standings";
+        renderAll();
+      });
+    }
 
     // Logout
     document.getElementById("btn-logout").addEventListener("click", () => {
