@@ -2296,6 +2296,7 @@
             showToast(t("toastWelcome", { username: currentUser.username }));
             addLog(t("logUserEntered", { username: currentUser.username }));
             
+            activeTab = "screen-dashboard";
             renderAll();
             triggerWelcomeOverlay(currentUser);
           } else {
@@ -2318,6 +2319,7 @@
               window.WC_SOUND.playSuccess();
               showToast(t("toastProfileRestored", { username: currentUser.username }));
               addLog(t("logUserEntered", { username: currentUser.username }));
+              activeTab = "screen-dashboard";
               renderAll();
               triggerWelcomeOverlay(currentUser);
             });
@@ -2340,6 +2342,7 @@
                 window.WC_SOUND.playSuccess();
                 showToast(t("toastMockUserInit", { username: currentUser.username }));
                 addLog(t("logUserEntered", { username: currentUser.username }));
+                activeTab = "screen-dashboard";
                 renderAll();
                 triggerWelcomeOverlay(currentUser);
               })
@@ -2416,6 +2419,7 @@
           formSignup.reset();
           initSignupAvatars();
 
+          activeTab = "screen-dashboard";
           renderAll();
           triggerWelcomeOverlay(currentUser);
         })
