@@ -95,11 +95,39 @@
     { id:"m51", homeTeam:"Inglaterra",       homeCode:"ENG", homeFlag:"🏴󠁧󠁢󠁥󠁮󠁧󠁿", awayTeam:"Panamá",             awayCode:"PAN", awayFlag:"🇵🇦", kickoff:"2026-06-29T19:00:00-04:00", group:"Grupo L", stadium:"Arrowhead Stadium, Kansas City",         realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
     { id:"m52", homeTeam:"Ghana",            homeCode:"GHA", homeFlag:"🇬🇭", awayTeam:"Croacia",            awayCode:"CRO", awayFlag:"🇭🇷", kickoff:"2026-06-29T19:00:00-04:00", group:"Grupo L", stadium:"Hard Rock Stadium, Miami",              realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
 
-    // --- MARTES 30 JUN ---
-    { id:"m53", homeTeam:"Canadá",           homeCode:"CAN", homeFlag:"🇨🇦", awayTeam:"Catar",              awayCode:"QAT", awayFlag:"🇶🇦", kickoff:"2026-06-30T16:00:00-04:00", group:"Grupo B", stadium:"BMO Field, Toronto",                   realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
-    { id:"m54", homeTeam:"Suiza",            homeCode:"SUI", homeFlag:"🇨🇭", awayTeam:"Bosnia y Herzegovina",awayCode:"BIH", awayFlag:"🇧🇦", kickoff:"2026-06-30T16:00:00-04:00", group:"Grupo B", stadium:"Mercedes-Benz Stadium, Atlanta",         realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
-    { id:"m55", homeTeam:"Brasil",           homeCode:"BRA", homeFlag:"🇧🇷", awayTeam:"Escocia",            awayCode:"SCO", awayFlag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", kickoff:"2026-06-30T19:00:00-04:00", group:"Grupo C", stadium:"SoFi Stadium, Inglewood",               realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
-    { id:"m56", homeTeam:"Marruecos",        homeCode:"MAR", homeFlag:"🇲🇦", awayTeam:"Haití",              awayCode:"HAI", awayFlag:"🇭🇹", kickoff:"2026-06-30T19:00:00-04:00", group:"Grupo C", stadium:"Hard Rock Stadium, Miami",              realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    // --- JUEVES 18 JUN ---
+    { id:"m53", homeTeam:"Canadá",           homeCode:"CAN", homeFlag:"🇨🇦", awayTeam:"Catar",              awayCode:"QAT", awayFlag:"🇶🇦", kickoff:"2026-06-18T18:00:00-04:00", group:"Grupo B", stadium:"BC Place, Vancouver",                   realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m54", homeTeam:"Suiza",            homeCode:"SUI", homeFlag:"🇨🇭", awayTeam:"Bosnia y Herzegovina",awayCode:"BIH", awayFlag:"🇧🇦", kickoff:"2026-06-18T15:00:00-04:00", group:"Grupo B", stadium:"SoFi Stadium, Inglewood",               realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+
+    // --- VIERNES 19 JUN ---
+    { id:"m55", homeTeam:"Brasil",           homeCode:"BRA", homeFlag:"🇧🇷", awayTeam:"Haití",              awayCode:"HAI", awayFlag:"🇭🇹", kickoff:"2026-06-19T20:30:00-04:00", group:"Grupo C", stadium:"Lincoln Financial Field, Filadelfia",   realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m56", homeTeam:"Escocia",          homeCode:"SCO", homeFlag:"🏴󠁧󠁢󠁳󠁣󠁴󠁿", awayTeam:"Marruecos",          awayCode:"MAR", awayFlag:"🇲🇦", kickoff:"2026-06-19T18:00:00-04:00", group:"Grupo C", stadium:"Gillette Stadium, Boston",               realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+
+    // --- JUEVES 18 JUN (Adicionales Grupo A) ---
+    { id:"m57", homeTeam:"Chequia",          homeCode:"CZE", homeFlag:"🇨🇿", awayTeam:"Sudáfrica",          awayCode:"RSA", awayFlag:"🇿🇦", kickoff:"2026-06-18T12:00:00-04:00", group:"Grupo A", stadium:"Mercedes-Benz Stadium, Atlanta",         realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m58", homeTeam:"México",           homeCode:"MEX", homeFlag:"🇲🇽", awayTeam:"Corea del Sur",      awayCode:"KOR", awayFlag:"🇰🇷", kickoff:"2026-06-18T21:00:00-04:00", group:"Grupo A", stadium:"Estadio Tres de Marzo, Guadalajara",    realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+
+    // --- VIERNES 19 JUN (Adicionales Grupo D) ---
+    { id:"m59", homeTeam:"Estados Unidos",   homeCode:"USA", homeFlag:"🇺🇸", awayTeam:"Australia",          awayCode:"AUS", awayFlag:"🇦🇺", kickoff:"2026-06-19T15:00:00-04:00", group:"Grupo D", stadium:"Lumen Field, Seattle",                   realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m60", homeTeam:"Turquía",          homeCode:"TUR", homeFlag:"🇹🇷", awayTeam:"Paraguay",           awayCode:"PAR", awayFlag:"🇵🇾", kickoff:"2026-06-19T23:00:00-04:00", group:"Grupo D", stadium:"Levi's Stadium, Santa Clara",             realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+
+    // --- SÁBADO 20 JUN (Adicionales Grupo E & F) ---
+    { id:"m61", homeTeam:"Alemania",         homeCode:"GER", homeFlag:"🇩🇪", awayTeam:"Costa de Marfil",    awayCode:"CIV", awayFlag:"🇨🇮", kickoff:"2026-06-20T16:00:00-04:00", group:"Grupo E", stadium:"BMO Field, Toronto",                   realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m62", homeTeam:"Ecuador",          homeCode:"ECU", homeFlag:"🇪🇨", awayTeam:"Curazao",            awayCode:"CUW", awayFlag:"🇨🇼", kickoff:"2026-06-20T20:00:00-04:00", group:"Grupo E", stadium:"Arrowhead Stadium, Kansas City",         realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m63", homeTeam:"Países Bajos",     homeCode:"NED", homeFlag:"🇳🇱", awayTeam:"Suecia",             awayCode:"SWE", awayFlag:"🇸🇪", kickoff:"2026-06-20T13:00:00-04:00", group:"Grupo F", stadium:"NRG Stadium, Houston",                  realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+
+    // --- DOMINGO 21 JUN (Adicionales Grupo F, G & H) ---
+    { id:"m64", homeTeam:"Túnez",            homeCode:"TUN", homeFlag:"🇹🇳", awayTeam:"Japón",              awayCode:"JPN", awayFlag:"🇯🇵", kickoff:"2026-06-21T00:00:00-04:00", group:"Grupo F", stadium:"Estadio Monterrey, Guadalupe",         realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m65", homeTeam:"Bélgica",          homeCode:"BEL", homeFlag:"🇧🇪", awayTeam:"Irán",               awayCode:"IRN", awayFlag:"🇮🇷", kickoff:"2026-06-21T15:00:00-04:00", group:"Grupo G", stadium:"SoFi Stadium, Inglewood",               realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m66", homeTeam:"Nueva Zelanda",    homeCode:"NZL", homeFlag:"🇳🇿", awayTeam:"Egipto",             awayCode:"EGY", awayFlag:"🇪🇬", kickoff:"2026-06-21T21:00:00-04:00", group:"Grupo G", stadium:"BC Place, Vancouver",                    realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m69", homeTeam:"España",           homeCode:"ESP", homeFlag:"🇪🇸", awayTeam:"Arabia Saudita",     awayCode:"KSA", awayFlag:"🇸🇦", kickoff:"2026-06-21T12:00:00-04:00", group:"Grupo H", stadium:"Mercedes-Benz Stadium, Atlanta",         realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m70", homeTeam:"Uruguay",          homeCode:"URU", homeFlag:"🇺🇾", awayTeam:"Cabo Verde",         awayCode:"CPV", awayFlag:"🇨🇻", kickoff:"2026-06-21T18:00:00-04:00", group:"Grupo H", stadium:"Hard Rock Stadium, Miami",              realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+
+    // --- VIERNES 26 JUN (Adicionales Grupo G & H - Jornada 3 Simultáneos) ---
+    { id:"m67", homeTeam:"Egipto",           homeCode:"EGY", homeFlag:"🇪🇬", awayTeam:"Irán",               awayCode:"IRN", awayFlag:"🇮🇷", kickoff:"2026-06-26T23:00:00-04:00", group:"Grupo G", stadium:"Lumen Field, Seattle",                   realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m68", homeTeam:"Nueva Zelanda",    homeCode:"NZL", homeFlag:"🇳🇿", awayTeam:"Bélgica",            awayCode:"BEL", awayFlag:"🇧🇪", kickoff:"2026-06-26T23:00:00-04:00", group:"Grupo G", stadium:"BC Place, Vancouver",                    realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m71", homeTeam:"España",           homeCode:"ESP", homeFlag:"🇪🇸", awayTeam:"Uruguay",            awayCode:"URU", awayFlag:"🇺🇾", kickoff:"2026-06-26T20:00:00-04:00", group:"Grupo H", stadium:"Estadio Tres de Marzo, Guadalajara",    realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
+    { id:"m72", homeTeam:"Cabo Verde",       homeCode:"CPV", homeFlag:"🇨🇻", awayTeam:"Arabia Saudita",     awayCode:"KSA", awayFlag:"🇸🇦", kickoff:"2026-06-26T20:00:00-04:00", group:"Grupo H", stadium:"NRG Stadium, Houston",                  realHomeGoals:null, realAwayGoals:null, status:"scheduled" },
 
     // ==============================================
     // FASE DE ELIMINACIÓN DIRECTA

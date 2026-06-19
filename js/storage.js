@@ -343,12 +343,12 @@
     };
 
     const bracketRules = {
-      "k1": { homeGroup: "Grupo I", homeRank: 1, awayGroup: "Grupo J", awayRank: 2 },
-      "k2": { homeGroup: "Grupo K", homeRank: 1, awayGroup: "Grupo L", awayRank: 2 },
-      "k3": { homeGroup: "Grupo A", homeRank: 1, awayGroup: "Grupo B", awayRank: 2 },
-      "k4": { homeGroup: "Grupo C", homeRank: 1, awayGroup: "Grupo D", awayRank: 2 },
-      "k5": { homeGroup: "Grupo E", homeRank: 1, awayGroup: "Grupo F", awayRank: 2 },
-      "k6": { homeGroup: "Grupo G", homeRank: 1, awayGroup: "Grupo H", awayRank: 2 }
+      "k1": { homeGroup: "Grupo A", homeRank: 1, awayGroup: "Grupo B", awayRank: 2 },
+      "k2": { homeGroup: "Grupo C", homeRank: 1, awayGroup: "Grupo D", awayRank: 2 },
+      "k3": { homeGroup: "Grupo E", homeRank: 1, awayGroup: "Grupo F", awayRank: 2 },
+      "k4": { homeGroup: "Grupo G", homeRank: 1, awayGroup: "Grupo H", awayRank: 2 },
+      "k5": { homeGroup: "Grupo I", homeRank: 1, awayGroup: "Grupo J", awayRank: 2 },
+      "k6": { homeGroup: "Grupo K", homeRank: 1, awayGroup: "Grupo L", awayRank: 2 }
     };
 
     matches.forEach(m => {
